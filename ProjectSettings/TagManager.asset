@@ -10,6 +10,9 @@ TagManager:
   - Wicket
   - Ball
   - AISweetPoint
+  - UpWall
+  - BounceWalls
+  - BottomWall
   layers:
   - Default
   - TransparentFX

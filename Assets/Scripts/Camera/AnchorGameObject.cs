@@ -17,6 +17,11 @@ public class AnchorGameObject : MonoBehaviour
         TopRight,
     };
 
+    public bool isUpWalls;
+    public bool isSideWalls;
+    public bool isBoundires;
+    public float boundriedMultiplayer = 2;
+
     public bool executeInUpdate;
 
     public AnchorType anchorType;
@@ -29,6 +34,25 @@ public class AnchorGameObject : MonoBehaviour
     {
         updateAnchorRoutine = UpdateAnchorAsync();
         StartCoroutine(updateAnchorRoutine);
+
+
+        if (isUpWalls)
+        {
+            float screenWidth = Screen.width;
+            transform.localScale = new Vector2(screenWidth * 2, transform.localScale.y);
+        }else if (isSideWalls)
+        {
+            float screenHeight = Screen.height;
+            transform.localScale = new Vector2(transform.localScale.x, screenHeight * 2);
+        }else if (isBoundires)
+        {
+            float screenHeight = Screen.height;
+            Vector2 screenToWorld = Camera.main.ScreenToWorldPoint(new Vector2(0, screenHeight / boundriedMultiplayer));
+            screenToWorld.y = Mathf.Abs(screenToWorld.y);
+            screenToWorld.x = transform.localScale.x;
+            transform.localScale = screenToWorld;
+        }
+
     }
 
     /// <summary>
@@ -108,6 +132,16 @@ public class AnchorGameObject : MonoBehaviour
             updateAnchorRoutine = UpdateAnchorAsync();
             StartCoroutine(updateAnchorRoutine);
         }
+
+        if (isBoundires)
+        {
+            float screenHeight = Screen.height;
+            Vector2 screenToWorld = Camera.main.ScreenToWorldPoint(new Vector2(0, screenHeight / boundriedMultiplayer));
+            screenToWorld.y = Mathf.Abs(screenToWorld.y);
+            screenToWorld.x = transform.localScale.x;
+            transform.localScale = screenToWorld;
+        }
+    
     }
 #endif
 }

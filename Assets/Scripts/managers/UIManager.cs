@@ -7,6 +7,8 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     public PlayerScreenUI ui_PlayScren;
+    public TimerScreenUI ui_TimerScreen;
+    public GameOverUI ui_GameOver;
 
 
     private void Awake()

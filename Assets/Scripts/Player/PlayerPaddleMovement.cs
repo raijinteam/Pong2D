@@ -6,54 +6,37 @@ public class PlayerPaddleMovement : MonoBehaviour
 {
     [Header("Require Components")]
     [SerializeField] private Rigidbody2D rb_PlayerBody;
+    [SerializeField] private Transform tf_BatHitPoint;
+    [SerializeField] private Transform tf_RightSwingPoint;
+    [SerializeField] private Transform tf_LeftSwingPoint;
+    [SerializeField] private SweetPointForce sweetForce;
 
 
     [Header("Player Properties")]
+    public bool isBatting;
     private bool isPlayerRotating;
     [SerializeField] private float flt_MoveSpeed;
     [SerializeField] private float flt_RotateSpeed;
     [SerializeField] private float fltClampOffset;
-    [SerializeField] private float fltMaxClampOffset;
+    
+
+    [Header("Swing Properites")]
+    [SerializeField] private float flt_Swing_Force;
 
 
-    [Header("Player Swipe Control")]
-    private bool isSwiping;
-    private bool isMoving;
-    private Vector2 firstTouchPossition;
-    private Vector2 endTouchPosition;
-    private Vector2 desiredPosition;
-    [SerializeField] private bool isLeftSwipe;
-    [SerializeField] private bool isRightSwipe;
-    [SerializeField] private float minSwipeDistance = 20f;
-    private float startTime;
-    [SerializeField] private float maxSwipeTime = 0.5f;
-   [SerializeField] private float minSwipeDistande = 0.17f;
-
-    [Header("Player Hitting ")]
-    [SerializeField] private bool isPaddleHitting;
-    [SerializeField] private bool canSwingBat = true;
-    [SerializeField] private float flt_BatSwingCooldownTime;
-    [SerializeField] private float currentBatSwingCooldownTime;
-
-    [Header("Player Bat Rotation Properties")]
-    public bool isPlayerSwingBat;
-    [SerializeField] private float flt_MaxRotationAngle;
-    [SerializeField] private float flt_RotationDuration;
-    [SerializeField] private float flt_SwingForce;
-
-
-
-    private Vector2 initialPos;
     private float flt_ScreenWidth;
-    private float currentSwingForce;
     private float horizontalMove;
-    private float VericalMove;
 
 
+
+    private void OnEnable()
+    {
+        isPlayerRotating = false;
+        transform.position = new Vector3(0, transform.position.y, 0);
+    }
 
     private void Start()
     {
-        canSwingBat = true;
         float screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize ;
         flt_ScreenWidth = screenHalfWidthInWorldUnits - 0.5f;
     }
@@ -67,37 +50,22 @@ public class PlayerPaddleMovement : MonoBehaviour
         RotatePlayer();
 
 
-
-
-        if (Input.GetKey(KeyCode.Space))
+        if (isBatting)
         {
-            isPlayerRotating = true;
-        }else if (Input.GetKeyUp(KeyCode.Space))
-        {
-            isPlayerRotating = false;
+            if (Input.GetKey(KeyCode.Space))
+            {
+                isPlayerRotating = true;
+            }
+            else if (Input.GetKeyUp(KeyCode.Space))
+            {
+                isPlayerRotating = false;
+            }
         }
-
-
-        //if (Input.GetKeyDown(KeyCode.Space) && canSwingBat)
-        //{
-        //    StartCoroutine(PlayerBatSwing(flt_MaxRotationAngle));
-        //    canSwingBat = false;
-        //}
-
-        //if (isPlayerSwingBat)
-        //{
-        //    currentSwingForce -= Time.deltaTime;
-        //}
-
-        //if (!canSwingBat)
-        //{
-        //    currentBatSwingCooldownTime += Time.deltaTime;
-        //    if (currentBatSwingCooldownTime >= flt_BatSwingCooldownTime)
-        //    {
-        //        currentBatSwingCooldownTime = 0;
-        //        canSwingBat = true;
-        //    }
-        //}
+        else
+        {
+            //transform.Rotate(Vector3.zero);
+            transform.rotation = Quaternion.identity;
+        }
     }
 
     private void FixedUpdate()
@@ -108,14 +76,8 @@ public class PlayerPaddleMovement : MonoBehaviour
     private void UserInputs()
     {
         horizontalMove = Input.GetAxis("Horizontal");
-        VericalMove = Input.GetAxis("Vertical");
+        //VericalMove = Input.GetAxis("Vertical");
     }
-
-
-   
-
-
-   
 
     private void PlayerSwipeMovement()
     {
@@ -143,7 +105,7 @@ public class PlayerPaddleMovement : MonoBehaviour
     {
         if (isPlayerRotating)
         {
-            transform.Rotate(transform.forward * Time.deltaTime /** VericalMove*/ * flt_RotateSpeed);
+            transform.Rotate(new Vector3(0, 0, flt_RotateSpeed * Time.deltaTime) /** VericalMove*/);
         }
     }
 
@@ -160,66 +122,64 @@ public class PlayerPaddleMovement : MonoBehaviour
 
     }
 
-
-    private void BatLeftAndRightScale()
+    public float CaclulatePaddleForceForBall(Vector2 _traget)
     {
-        Vector2 objectPosition = Camera.main.WorldToScreenPoint(transform.position);
-
-        if(objectPosition.x < Screen.width / 2)
+        if (!isBatting)
         {
-            transform.localScale = new Vector3(-1.5f, transform.localScale.y, transform.localScale.z);
-            if (Input.GetKeyDown(KeyCode.Space) && canSwingBat)
+            float distance = Mathf.Abs(_traget.x - tf_BatHitPoint.position.x);
+
+            float force = 0;
+
+            if (distance < 0.09f)
             {
-                StartCoroutine(PlayerBatSwing(flt_MaxRotationAngle));
-                canSwingBat = false;
+                force = sweetForce.flt_MinHitForce;
             }
-        }
-        else if(objectPosition.x > Screen.width / 2)
-        {
-            transform.localScale = new Vector3(1.5f, transform.localScale.y, transform.localScale.z);
-            if (Input.GetKeyDown(KeyCode.Space) && canSwingBat)
+            else
             {
-                StartCoroutine(PlayerBatSwing(-flt_MaxRotationAngle));
-                canSwingBat = false;
+                force = sweetForce.flt_MaxHitForce;
             }
+
+            return force;
         }
-    }
-
-    private IEnumerator PlayerBatSwing(float _rotationAngle)
-    {
-        isPlayerSwingBat = true;
-        currentSwingForce = flt_SwingForce;
-        isPaddleHitting = true;
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(0, 0, _rotationAngle);
-
-        float _currentRotationTime = 0;
-
-        while(_currentRotationTime < 1)
+        else
         {
-            _currentRotationTime += Time.deltaTime / flt_RotationDuration;
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, _currentRotationTime);
-            yield return null;
+            return sweetForce.CalculateBatHitForce(_traget);
         }
-        yield return new WaitForSeconds(0.1f);
-        transform.rotation = Quaternion.identity;
-        isPlayerSwingBat = false;
-        isPaddleHitting = false;
-        currentSwingForce = flt_SwingForce;
+
     }
 
-    public float CalculateBatForceWhenSwing()
+    public float CalculateDistanceFromSwingPoints(Vector3 _traget)
     {
-        return Mathf.Abs(currentSwingForce);
-    }
+        if (!isBatting)
+        {
+            float distance = 0;
+            float rightSwingPointDistance = Vector3.Distance(tf_RightSwingPoint.position, _traget);
+            float leftSwingPointDistance = Vector3.Distance(tf_LeftSwingPoint.position, _traget);
 
-    public void OnPointerDown_RotatePaddle()
-    {
-        isPlayerRotating = true;
-    }
+            if (leftSwingPointDistance > rightSwingPointDistance)
+            {
+                distance = leftSwingPointDistance;
+                distance = -distance;
+            }
+            else
+            {
+                distance = rightSwingPointDistance;
+            }
 
-    public void OnPointerUp_StopRotatePaddle()
-    {
-        isPlayerRotating = false;
+            if (Mathf.Abs(distance) > 0 && Mathf.Abs(distance) < 1.10f)
+            {
+                distance = 0;
+            }
+
+            distance *= flt_Swing_Force;
+
+            //distance = Mathf.Clamp(distance, flt_MinSwingForce, flt_MaxSwingForce);
+            return distance;
+        }
+        else
+        {
+            return 0;
+        }
+
     }
 }
