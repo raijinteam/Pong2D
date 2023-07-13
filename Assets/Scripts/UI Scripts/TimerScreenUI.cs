@@ -16,11 +16,11 @@ public class TimerScreenUI : MonoBehaviour
         currentTime = flt_WaitTime;
         if (GameManager.instance.isPlayerBatting)
         {
-            txt_Target.text = "Target : " +  GameManager.instance.playerTotalRuns.ToString();
+            txt_Target.text = "Target : " +  (GameManager.instance.playerTotalRuns + 1).ToString();
         }
         else
         {
-            txt_Target.text = "Target : " + GameManager.instance.aiTotalRuns.ToString();
+            txt_Target.text = "Target : " + (GameManager.instance.aiTotalRuns + 1).ToString();
         }
     }
 
@@ -39,6 +39,9 @@ public class TimerScreenUI : MonoBehaviour
             this.gameObject.SetActive(false);
             UIManager.instance.ui_PlayScren.gameObject.SetActive(true);
             GameManager.instance.SpawnNewBall();
+            GameManager.instance.player.gameObject.SetActive(true);
+            GameManager.instance.aiPaddle.gameObject.SetActive(true);
+
         }
     }
 

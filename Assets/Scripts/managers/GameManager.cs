@@ -14,27 +14,30 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Properites")]
     public bool isGamePlaying;
+    public bool isGameTimeOver;
     [SerializeField] private float flt_ActiveGameTime; // When game start timer for game play
     public int roundWicketCount = 0; // total wickets in one inning
     public int roundRunsCount = 0; // total runs in one inning
     [SerializeField] private int maxWicketsForPlay; // the max wickets for complate one inning
     public bool isPlayerBatting; // flag for check is player bet
     public bool isAiBatting; // flag for check is ai bat
-    public float currentActiveGameTime = 0;
+    public float currentActiveGameTime = 0; //current active game time
 
-    public bool isTargetChased;
 
-    public string winnerName;
 
-    public int inningIndex = 0;
+    public bool isTargetChased; //flag for check target is chased
+
+    public string winnerName; // store winner name
+
+    public int inningIndex = 0; // store inning 
 
     public int playerTotalRuns; // player total run when player is batting
     public int playerTotalWickets; // player total wickets in one round
     public int aiTotalRuns; // ai total run when ai is batting
     public int aiTotalWickets; //ai Total Wickets in one round
 
-    private Vector3 aiPaddlePosition;
-    private Vector3 playerPaddlePosition;
+    private Vector3 aiPaddlePosition; //Store Ai paddle position
+    private Vector3 playerPaddlePosition; // Store Player paddle position
 
 
     [SerializeField] private GameObject ball;
@@ -45,7 +48,6 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
         }
-
         inningIndex = 1;
     }
 
@@ -57,22 +59,28 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if(isGamePlaying){
+            isGameTimeOver = false;
             currentActiveGameTime += Time.deltaTime;
             UIManager.instance.ui_PlayScren.txt_GameTime.text = currentActiveGameTime.ToString("00:00");
             if(currentActiveGameTime >= flt_ActiveGameTime)
             {
                 //Check if player batting or bowing
-                Debug.Log("Change Ining");
+                Debug.Log("Game over");
+                ChangeInning();
                 currentActiveGameTime = 0;
-               // ChangeInning();
+                isGameTimeOver = true;
             }
+
+
+            //Check FOr target is Chased
+            CheckForTargetIsChase();
         }
     }
 
     //CHeck for wickets 
     public void CheckIsAnyBatsmanRemaing()
     {
-        if(roundWicketCount >= maxWicketsForPlay - 1)
+        if(roundWicketCount == maxWicketsForPlay - 1)
         {
             //all Out change ining
             Debug.Log("All Out");
@@ -81,7 +89,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    //Check of target is Chased if chaseed by player 2 and set gameover
     public void CheckForTargetIsChase()
     {
         if(aiTotalRuns > playerTotalRuns)
@@ -100,7 +108,7 @@ public class GameManager : MonoBehaviour
         } 
     }
 
-
+    //Spawn position of players when inning change
     private void SwapPositions()
     {
         aiPaddlePosition = aiPaddle.transform.position;
@@ -112,13 +120,17 @@ public class GameManager : MonoBehaviour
         CheckForAiBattingOrPlayer();
     }
 
+    //Change inning when one inning is Complate
     public void ChangeInning()
     {
-
         ball.gameObject.SetActive(false);
 
         isGamePlaying = false;
 
+        player.gameObject.SetActive(false);
+        aiPaddle.gameObject.SetActive(false);
+
+        //When Chaning inning check if target is not chased but time is over or all wickets 
         if(inningIndex == 2 && !isTargetChased)
         {
             winnerName = "Player";
@@ -128,26 +140,28 @@ public class GameManager : MonoBehaviour
             UIManager.instance.ui_GameOver.gameObject.SetActive(true);
             UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
         }
+        else
+        {
 
+            inningIndex++;
+
+            UIManager.instance.ui_TimerScreen.gameObject.SetActive(true);
+            UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
+        }
         SwapPositions();
 
-        inningIndex++;
-
+        
 
        
 
-        UIManager.instance.ui_TimerScreen.gameObject.SetActive(true);
-        UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
-
-
+        //when inning is changing if player is batting set player is bowling and player 2 set batting
         if (player.GetComponent<PlayerPaddleMovement>().isBatting)
         {
             isPlayerBatting = false;
             isAiBatting = true;
-            roundRunsCount = 0;
-            
         }
 
+        //when inning is changing if player2 is batting set player is bowling and player 1 set batting
         if (aiPaddle.GetComponent<AiPaddle>().isBatting)
         {
             isPlayerBatting = true;
@@ -186,11 +200,8 @@ public class GameManager : MonoBehaviour
         if (isGamePlaying)
         {
             Destroy(ball);
-
-
             ball = Instantiate(pf_Ball.gameObject, transform.position, Quaternion.identity);
         }
-        
     }
 
     public void ResetScoresOnInningChange()
@@ -205,7 +216,6 @@ public class GameManager : MonoBehaviour
     {
         isGamePlaying = true;
         isTargetChased = false;
-        ball.gameObject.SetActive(true);
         player.gameObject.SetActive(true);
         aiPaddle.gameObject.SetActive(true);
         currentActiveGameTime = 0;
@@ -218,11 +228,11 @@ public class GameManager : MonoBehaviour
         roundWicketCount = 0;
         UIManager.instance.ui_PlayScren.txt_Score.text = roundRunsCount.ToString();
         UIManager.instance.ui_PlayScren.txt_Wickets.text = roundWicketCount.ToString();
+        SpawnNewBall();
     }
 
     public void IncreaseWicket()
     {
-        CheckIsAnyBatsmanRemaing();
         roundWicketCount++;
         if (player.GetComponent<PlayerPaddleMovement>().isBatting)
         {
@@ -233,6 +243,7 @@ public class GameManager : MonoBehaviour
             aiTotalWickets++;
         }
         UIManager.instance.ui_PlayScren.txt_Wickets.text = roundWicketCount.ToString();
+        CheckIsAnyBatsmanRemaing();
     }
 
     public void IncreaseScore(int runs)

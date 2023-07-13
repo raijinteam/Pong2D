@@ -29,6 +29,17 @@ public class BallMovement : MonoBehaviour
     public float swingDir;
 
 
+
+    //all String use in this scripts
+    public string UpWall = "UpWall";
+    public string BottomWall = "BottomWall";
+    public string Player = "Player";
+    public string AI = "AI";
+    public string Boundries = "Boundries";
+    public string Wicket = "Wicket";
+
+
+
     private void OnEnable()
     {
         transform.position = Vector3.zero;
@@ -99,19 +110,20 @@ public class BallMovement : MonoBehaviour
 
         dirction.right = dir;
 
-        if (collision.gameObject.CompareTag("UpWall"))
+        if (collision.gameObject.CompareTag(UpWall))
         {
               isSwing = false;
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
-
+            GameManager.instance.aiPaddle.isHitBall = false;
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed , ForceMode2D.Impulse); // get batsman speed
         }
 
-        if (collision.gameObject.CompareTag("BottomWall"))
+        if (collision.gameObject.CompareTag(BottomWall))
         {
             GameManager.instance.aiPaddle.isHitBall = false;
+            canAddRuns = false;
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
@@ -119,7 +131,7 @@ public class BallMovement : MonoBehaviour
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed, ForceMode2D.Impulse); // get batsman speed
         }
 
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag(Player))
         {
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
@@ -148,7 +160,7 @@ public class BallMovement : MonoBehaviour
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed * batForce, ForceMode2D.Impulse); // get batsman speed
         }
 
-        if (collision.gameObject.CompareTag("AI"))
+        if (collision.gameObject.CompareTag(AI))
         {
 
             canAddRuns = false;
@@ -174,7 +186,6 @@ public class BallMovement : MonoBehaviour
 
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed * totalForce, ForceMode2D.Impulse);
             aiPaddle.SetRandomXOffset();
-
         }
        
     }
@@ -185,17 +196,19 @@ public class BallMovement : MonoBehaviour
     {
         if (canAddRuns)
         {
-            if (collision.CompareTag("Boundries") && !startRunDelayTimer)
+            if (collision.CompareTag(Boundries) && !startRunDelayTimer)
             {
                 startRunDelayTimer = true;
                 int _score = collision.gameObject.GetComponent<Runs>().runs;
                 GameManager.instance.IncreaseScore(_score);
+               // Debug.Log("Runs Add : " + _score);
                // ScoreManager.instance.AddScore(_score);
             }
         }
 
-        if (collision.CompareTag("Wicket"))
+        if (collision.CompareTag(Wicket))
         {
+            Debug.Log("Wickets Down");
             GameManager.instance.IncreaseWicket();
             GameManager.instance.SpawnNewBall();
             //ScoreManager.instance.AddWicket();
