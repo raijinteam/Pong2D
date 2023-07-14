@@ -1,57 +1,77 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Test : MonoBehaviour
 {
-    public float rotationSpeed = 90f; // Adjust the speed of rotation if needed
-   [SerializeField] private float currentRotation = 25f;
-    [SerializeField]float targetRotation = 360f;
+    [SerializeField] private float targetRotation;
+    [SerializeField] private float flt_StartRotation;
+    [SerializeField] private float flt_RotationSpeed;
+    [SerializeField] private bool IsRotate360;
+
+    [SerializeField] private float rotationAmount;
+    [SerializeField] private float moduleValue360;
+   
+
+
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.W)) {
-            //transform.eulerAngles = new Vector3(0, 0, currentRotation);
-            StartCoroutine(RotateObjectCoroutine());
-           
-           
-           
-        }
-    }
 
-    IEnumerator RotateObjectCoroutine() {
-
-        bool isRoate360 = false;
-        if (targetRotation < currentRotation) {
-            isRoate360 = true;
-            targetRotation += 180;
-        }
        
-            while (targetRotation > currentRotation) {
-                float rotationAmount = rotationSpeed * Time.deltaTime;
-                transform.Rotate(0f, 0, rotationAmount);
-                currentRotation += rotationAmount;
-                yield return null;
-            }
-
-        if (isRoate360) {
-            currentRotation -= 180;
-            targetRotation -= 180;
-            transform.eulerAngles = new Vector3(0, 0, currentRotation);
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            transform.localEulerAngles = new Vector3(0, 0, flt_StartRotation);
+            StartCoroutine(RotatePaddle());
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace)) {
+            transform.localEulerAngles = new Vector3(0, 0, flt_StartRotation);
+            StartCoroutine(ResetPaddle());
+           
         }
     }
 
-    IEnumerator RotateObjectCoroutine2() {
+    private IEnumerator ResetPaddle() {
+
+        moduleValue360 = flt_StartRotation % 360;
+        transform.localEulerAngles = new Vector3(0, 0, moduleValue360);
+
+        if (moduleValue360 > 180) {
+
+            int Value = ((int)(flt_StartRotation / 360));
+            targetRotation = flt_StartRotation + (360 * (Value + 1) - flt_StartRotation);
+
+        }
+        else {
+
+            int Value = ((int)(flt_StartRotation / 180));
+            targetRotation = flt_StartRotation + (180 * (Value + 1) - flt_StartRotation);
+        }
 
 
-        while (targetRotation < currentRotation) {
-            float rotationAmount = rotationSpeed * Time.deltaTime;
-            transform.Rotate(0f, rotationAmount, 0f);
-            currentRotation -= rotationAmount;
+        Quaternion target = Quaternion.Euler(0, 0, targetRotation);
+
+        while (transform.rotation != target) {
+            float step = flt_RotationSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
             yield return null;
         }
+        flt_StartRotation = targetRotation;
 
 
+    }
 
+    private IEnumerator RotatePaddle() {
 
+        targetRotation += Random.Range(20,40);
+
+        Quaternion target = Quaternion.Euler(0,0,targetRotation);
+
+        while (transform.rotation != target) {
+            float step = flt_RotationSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
+            yield return null;
+        }
+        flt_StartRotation = targetRotation;
     }
 }

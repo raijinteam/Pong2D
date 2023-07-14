@@ -78,22 +78,26 @@ public class AiPaddle : MonoBehaviour
     [Header("Paddle Rotation")]
     public float rotationSpeed = 90f; // Adjust the speed of rotation if needed
     [SerializeField] private float flt_MinRotatinToReset = 50f;
-    [SerializeField] private float flt_MaxRotationToReset = 160f;
-    
+    [SerializeField] private float flt_MaxRotationToReset = 40f;
+    [SerializeField] private float flt_StartRotation;
+    [SerializeField] private float targetRotation;
+    [SerializeField] private float flt_RoatationSpeed;
+
+    private Coroutine coro_Reset;
+    private Coroutine coro_Rotate;
 
     private void OnEnable()
     {
         transform.position = new Vector3(0, transform.position.y, 0);
         if (!isBatting)
             transform.rotation = Quaternion.identity;
+
+        
     }
 
     private void Start()
     {
-        float mod = 4354 % 360;
-        Debug.Log("Mod : " + mod);
-
-        SetRandomXOffset();
+        SetRandomAngleAndPostion();
     }
 
     // Update is called once per frame
@@ -113,7 +117,12 @@ public class AiPaddle : MonoBehaviour
             if (currentRotationDelay >= flt_RotationDelay)
             {
                 //remainingRotation = 180 - (transform.localEulerAngles.z % 180);
-                 StartCoroutine(ResetPaddle());
+                Debug.Log("Reset COur Run");
+
+                if (coro_Reset == null && coro_Rotate == null) {
+                    coro_Reset = StartCoroutine(ResetPaddle());
+                }
+
                 canPaddleResetRotation = false;
                 currentRotationDelay = 0;
             }
@@ -122,7 +131,7 @@ public class AiPaddle : MonoBehaviour
     }
 
 
-    public void SetRandomXOffset()
+    public void SetRandomAngleAndPostion()
     {
         xPositionOffset = Random.Range(-0.5f, 0.5f);
         if (isBatting)
@@ -205,58 +214,64 @@ public class AiPaddle : MonoBehaviour
             {
                 isBallInRange = true;
             }
+            else {
+                isBallInRange = false;
+            }
 
 
             if (isBallInRange)
             {
-                if (ballPosition.x > transform.position.x + 0.1f)
-                {
-                    if (canRotateRight)
-                    {
-                        StartCoroutine(RotatePaddleRightSIde());
+
+                if (ballPosition.x > transform.position.x + 0.1f) {
+
+                    if (canRotateRight) {
+
+                        if (coro_Reset == null && coro_Rotate == null) {
+                            coro_Rotate = StartCoroutine(RotatePaddle(flt_RotationLeftAngle));
+                        }
                        
                         canRotateRight = false;
                     }
-
                 }
-                else if (ballPosition.x < transform.position.x - 0.1f)
-                {
-                    if (canRotateLeft)
-                    {
-                        StartCoroutine(RotatePaddleLeftSide());
+                else if (ballPosition.x < transform.position.x - 0.1f) {
+
+                    if (canRotateLeft) {
+
+                        if (coro_Reset == null && coro_Rotate == null) {
+                            coro_Rotate = StartCoroutine(RotatePaddle(flt_RotationLeftAngle));
+                        }
                         canRotateLeft = false;
                     }
 
                 }
+
+
             }
         }
-        else
-        {
-            transform.localEulerAngles = (Vector3.zero);
-        }
+        
     }
 
-    private IEnumerator ResetPaddle()
-    {
-        Vector3 startVector = transform.eulerAngles;
+    //private IEnumerator ResetPaddle()
+    //{
+    //    Vector3 startVector = transform.eulerAngles;
 
-        Vector3 stopRotation = new Vector3(0, 0, 180);
+    //    Vector3 stopRotation = new Vector3(0, 0, 180);
 
 
-        if ((transform.eulerAngles.z > flt_MinRotatinToReset &&  transform.eulerAngles.z < flt_MaxRotationToReset))
-        {
-            float fltCurrentTime = 0;
-            while (fltCurrentTime < 1)
-            {
-                fltCurrentTime += Time.deltaTime / 0.5f;
+    //    if ((transform.eulerAngles.z > flt_MinRotatinToReset &&  transform.eulerAngles.z < flt_MaxRotationToReset))
+    //    {
+    //        float fltCurrentTime = 0;
+    //        while (fltCurrentTime < 1)
+    //        {
+    //            fltCurrentTime += Time.deltaTime / 0.5f;
 
-                transform.eulerAngles = Vector3.Slerp(startVector, stopRotation, fltCurrentTime);
-                yield return null;
-            }
-            transform.eulerAngles = stopRotation;
-            transform.eulerAngles = new Vector3(0,0,Random.Range(0,15));
-        }
-    }
+    //            transform.eulerAngles = Vector3.Slerp(startVector, stopRotation, fltCurrentTime);
+    //            yield return null;
+    //        }
+    //        transform.eulerAngles = stopRotation;
+    //        transform.eulerAngles = new Vector3(0,0,Random.Range(0,15));
+    //    }
+    //}
 
     
     IEnumerator RotatePaddleRightSIde()
@@ -321,6 +336,7 @@ public class AiPaddle : MonoBehaviour
         isHitBall = true;
         isBallInRange = false;
         canRotateRight = true;
+       
         canRotateLeft = true;
         if (isBatting)
         {
@@ -388,6 +404,55 @@ public class AiPaddle : MonoBehaviour
             return 0;
         }
 
+    }
+
+    private IEnumerator ResetPaddle() {
+
+       float moduleValue360 = flt_StartRotation % 360;
+        transform.localEulerAngles = new Vector3(0, 0, moduleValue360);
+
+        if (moduleValue360 > 180) {
+
+            int Value = ((int)(flt_StartRotation / 360));
+            float index = Random.Range(-5, 5);
+            targetRotation = flt_StartRotation + (360 * (Value + 1) - flt_StartRotation + index);
+
+        }
+        else {
+
+            int Value = ((int)(flt_StartRotation / 180));
+            float index = Random.Range(-5, 5);
+            targetRotation = flt_StartRotation + (180 * (Value + 1) - flt_StartRotation + index);
+        }
+
+
+        Quaternion target = Quaternion.Euler(0, 0, targetRotation);
+
+        while (transform.rotation != target) {
+            float step = flt_RoatationSpeed * Time.deltaTime;
+            Debug.Log("Coro Reset Start");
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
+            yield return null;
+        }
+        flt_StartRotation = targetRotation;
+        coro_Reset = null;
+
+    }
+
+    private IEnumerator RotatePaddle(float angle) {
+
+        targetRotation += angle;
+
+        Quaternion target = Quaternion.Euler(0, 0, targetRotation);
+
+        while (transform.rotation != target) {
+            float step = flt_RoatationSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
+            Debug.Log("Coro Rotate Start");
+            yield return null;
+        }
+        coro_Rotate = null;
+        flt_StartRotation = targetRotation;
     }
 
 

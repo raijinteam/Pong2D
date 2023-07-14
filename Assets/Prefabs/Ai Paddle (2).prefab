@@ -99,21 +99,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBatting: 1
-  addBallForce: 7
+  isHitBall: 0
+  canPaddleResetRotation: 0
+  flt_RotationDelay: 0
+  currentRotationDelay: 0
   xPositionOffset: 0
-  horizontalMove: 0
-  VericalMove: 0
-  flt_ScreenWidth: 0
-  fltClampOffset: 0
-  tf_BallPositon: {fileID: 0}
+  ball: {fileID: 0}
   rigidBody: {fileID: 4810096993490370895}
   tf_BatHitPoint: {fileID: 4810096995097312491}
   tf_LeftSwingPoint: {fileID: 4810096993857792872}
   tf_RightSwingPoint: {fileID: 4810096994249597663}
   sweetForce: {fileID: 985023383}
-  flt_MinHitForce: 2
-  flt_MaxHitForce: 2
-  flt_RotationSpeed: 5
+  flt_RotationRightANgle: 0
+  flt_MinRightRotationAngle: 0
+  flt_MaxRightRotationAngle: 40
+  flt_RotationLeftAngle: 0
+  flt_MinLeftRotationAngle: 0
+  flt_MaxLeftRotationAngle: 180
+  isBallInRange: 0
   flt_MoveSpeed: 5
   aiDifficulty: 2
   flt_LowMoveSpeed: 5
@@ -122,10 +125,21 @@ MonoBehaviour:
   flt_LowFollowDistance: 4
   flt_MediumFollowDistance: 7
   flt_HighFollowDistance: 9
-  flt_ClampOffset: 0
+  flt_LowRotateSpeed: 0
+  flt_MediumRotateSpeed: 0
+  flt_HighRotateSpeed: 0
   flt_Swing_Force: 10
   flt_MinSwingForce: -500
   flt_MaxSwingForce: 500
+  remainingRotation: 0
+  canRotateRight: 1
+  canRotateLeft: 1
+  rotationSpeed: 90
+  flt_MinRotatinToReset: 50
+  flt_MaxRotationToReset: 40
+  flt_StartRotation: 0
+  targetRotation: 0
+  flt_RoatationSpeed: 100
 --- !u!114 &985023383
 MonoBehaviour:
   m_ObjectHideFlags: 0

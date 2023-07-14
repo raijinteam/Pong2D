@@ -88,7 +88,7 @@ MonoBehaviour:
   ball_Rb: {fileID: 3632763318094906708}
   dirction: {fileID: 3632763319384427211}
   dir: {x: 0, y: 0, z: 0}
-  flt_BallMoveSpeed: 3
+  flt_BallMoveSpeed: 5
   canAddRuns: 0
   startRunDelayTimer: 0
   flt_RunDelayTimer: 0.2

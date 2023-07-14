@@ -106,13 +106,14 @@ public class BallMovement : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
-
-        dirction.right = dir;
+      
 
         if (collision.gameObject.CompareTag(UpWall))
         {
-              isSwing = false;
+            dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
+
+            dirction.right = dir;
+            isSwing = false;
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
@@ -122,6 +123,10 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(BottomWall))
         {
+            dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
+            dirction.right = dir;
+            Debug.Log("Touch With BottamWall");
+           
             GameManager.instance.aiPaddle.isHitBall = false;
             canAddRuns = false;
             ball_Rb.velocity = Vector2.zero;
@@ -133,6 +138,7 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(Player))
         {
+           
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
@@ -162,7 +168,7 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(AI))
         {
-
+            dirction.right = -dirction.right;
             canAddRuns = false;
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
@@ -185,7 +191,7 @@ public class BallMovement : MonoBehaviour
             fltSwingForce = collision.gameObject.GetComponent<AiPaddle>().CalculateDistanceFromSwingPoints(transform.position);
 
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed * totalForce, ForceMode2D.Impulse);
-            aiPaddle.SetRandomXOffset();
+            aiPaddle.SetRandomAngleAndPostion();
         }
        
     }
@@ -210,7 +216,7 @@ public class BallMovement : MonoBehaviour
         {
            // Debug.Log("Wickets Down");
             GameManager.instance.IncreaseWicket();
-          //  GameManager.instance.SpawnNewBall();
+            GameManager.instance.SpawnNewBall();
             //ScoreManager.instance.AddWicket();
         }
     }
