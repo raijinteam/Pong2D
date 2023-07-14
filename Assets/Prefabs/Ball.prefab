@@ -88,7 +88,7 @@ MonoBehaviour:
   ball_Rb: {fileID: 3632763318094906708}
   dirction: {fileID: 3632763319384427211}
   dir: {x: 0, y: 0, z: 0}
-  flt_BallMoveSpeed: 5
+  flt_BallMoveSpeed: 3
   canAddRuns: 0
   startRunDelayTimer: 0
   flt_RunDelayTimer: 0.2
@@ -99,6 +99,12 @@ MonoBehaviour:
   flt_SwingAngle: 1
   fltSwingForce: 0
   swingDir: 0
+  UpWall: UpWall
+  BottomWall: BottomWall
+  Player: Player
+  AI: AI
+  Boundries: Boundries
+  Wicket: Wicket
 --- !u!1 &3632763318392283860
 GameObject:
   m_ObjectHideFlags: 0

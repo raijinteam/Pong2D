@@ -208,9 +208,9 @@ public class BallMovement : MonoBehaviour
 
         if (collision.CompareTag(Wicket))
         {
-            Debug.Log("Wickets Down");
+           // Debug.Log("Wickets Down");
             GameManager.instance.IncreaseWicket();
-            GameManager.instance.SpawnNewBall();
+          //  GameManager.instance.SpawnNewBall();
             //ScoreManager.instance.AddWicket();
         }
     }

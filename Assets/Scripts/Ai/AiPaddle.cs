@@ -44,7 +44,7 @@ public class AiPaddle : MonoBehaviour
     [SerializeField] private float flt_MinLeftRotationAngle;
     [SerializeField] private float flt_MaxLeftRotationAngle = 180;
 
-    
+
     [SerializeField] private bool isBallInRange;
 
 
@@ -72,6 +72,15 @@ public class AiPaddle : MonoBehaviour
 
     [SerializeField] private float remainingRotation;
 
+    public bool canRotateRight = true;
+    public bool canRotateLeft = true;
+
+    [Header("Paddle Rotation")]
+    public float rotationSpeed = 90f; // Adjust the speed of rotation if needed
+    [SerializeField] private float flt_MinRotatinToReset = 50f;
+    [SerializeField] private float flt_MaxRotationToReset = 160f;
+    
+
     private void OnEnable()
     {
         transform.position = new Vector3(0, transform.position.y, 0);
@@ -81,6 +90,9 @@ public class AiPaddle : MonoBehaviour
 
     private void Start()
     {
+        float mod = 4354 % 360;
+        Debug.Log("Mod : " + mod);
+
         SetRandomXOffset();
     }
 
@@ -101,7 +113,7 @@ public class AiPaddle : MonoBehaviour
             if (currentRotationDelay >= flt_RotationDelay)
             {
                 //remainingRotation = 180 - (transform.localEulerAngles.z % 180);
-                StartCoroutine(ResetPaddle());
+                 StartCoroutine(ResetPaddle());
                 canPaddleResetRotation = false;
                 currentRotationDelay = 0;
             }
@@ -112,13 +124,13 @@ public class AiPaddle : MonoBehaviour
 
     public void SetRandomXOffset()
     {
-        //xPositionOffset = Random.Range(-0.5f, 0.5f);
+        xPositionOffset = Random.Range(-0.5f, 0.5f);
         if (isBatting)
         {
             flt_RotationRightANgle = Random.Range(flt_MinRightRotationAngle, flt_MaxRightRotationAngle);
             flt_RotationLeftAngle = Random.Range(flt_MinLeftRotationAngle, flt_MaxLeftRotationAngle);
         }
-        
+
     }
 
     private void AiMovement()
@@ -193,89 +205,28 @@ public class AiPaddle : MonoBehaviour
             {
                 isBallInRange = true;
             }
-            /*else if ((remainingRotation > 50 && remainingRotation < 90) || (remainingRotation > 180 && remainingRotation < 150))
-            {
-                Debug.Log("Reset Rotation");
-
-                float rotationStep = remainingRotation;
-                float maxRotationStep = 50 * Time.deltaTime;
-
-                if (rotationStep > maxRotationStep)
-                {
-                    rotationStep = maxRotationStep;
-                }
-
-                // Rotate the object in the counter-clockwise direction
-                transform.localEulerAngles = new Vector3(0, 0, remainingRotation * maxRotationStep);
-
-                // Reduce the remaining rotation
-                remainingRotation -= rotationStep;
-            }*/
 
 
             if (isBallInRange)
             {
                 if (ballPosition.x > transform.position.x + 0.1f)
                 {
-                    
-                    if (transform.localEulerAngles.z < flt_RotationRightANgle)
+                    if (canRotateRight)
                     {
-                        float rotationAmount = rotateSpeedBaseOnDifficulty * Time.deltaTime;
-                        float newZRotation = transform.localEulerAngles.z + rotationAmount;
-
-                        if (newZRotation > flt_RotationRightANgle)
-                        {
-                            newZRotation = flt_RotationRightANgle;
-                        }
-                        transform.localEulerAngles = new Vector3(0, 0, newZRotation % 180);
+                        StartCoroutine(RotatePaddleRightSIde());
+                       
+                        canRotateRight = false;
                     }
-                    else if (transform.localEulerAngles.z > flt_RotationRightANgle)
-                    {
-                        float rotationAmount = rotateSpeedBaseOnDifficulty * Time.deltaTime;
-                        float newZRotation = (transform.localEulerAngles.z) + rotationAmount;
 
-                        Debug.Log("Rotation Amount : " + rotationAmount + " New Rotation : " + newZRotation);
-
-                        if (newZRotation < flt_RotationRightANgle)
-                        {
-                            newZRotation = flt_RotationRightANgle;
-                        }else if(newZRotation >= flt_RotationRightANgle)
-                        {                             
-                            newZRotation = flt_RotationRightANgle;
-                        }
-
-                        transform.localEulerAngles = new Vector3(0, 0, newZRotation % 180);
-                        // StartCoroutine(RotatePaddle());
-                    }
                 }
                 else if (ballPosition.x < transform.position.x - 0.1f)
                 {
-                    if ((transform.localEulerAngles.z < flt_RotationLeftAngle))
+                    if (canRotateLeft)
                     {
-                        //Debug.Log("In If block");
-                        float rotationAmount = rotateSpeedBaseOnDifficulty * Time.deltaTime;
-                        float newZRotation = transform.localEulerAngles.z + rotationAmount;
-
-                        if (newZRotation > flt_RotationLeftAngle)
-                        {
-                            newZRotation = flt_RotationLeftAngle;
-                        }
-
-                        transform.localEulerAngles = new Vector3(0, 0, newZRotation % 180);
+                        StartCoroutine(RotatePaddleLeftSide());
+                        canRotateLeft = false;
                     }
-                    else if (transform.localEulerAngles.z > flt_RotationLeftAngle)
-                    {
-                        //Debug.Log("In else block");
-                        float rotationAmount = rotateSpeedBaseOnDifficulty * Time.deltaTime;
-                        float newZRotation = transform.localEulerAngles.z + rotationAmount;
 
-                        if (newZRotation < flt_RotationLeftAngle)
-                        {
-                            newZRotation = flt_RotationLeftAngle;
-                        }
-
-                        transform.localEulerAngles = new Vector3(0, 0, newZRotation % 180);
-                    }
                 }
             }
         }
@@ -287,65 +238,90 @@ public class AiPaddle : MonoBehaviour
 
     private IEnumerator ResetPaddle()
     {
-        Vector3 startVector = transform.localEulerAngles;
-        Vector3 targetVector = new Vector3(0, 0, Random.Range(0, 15));
+        Vector3 startVector = transform.eulerAngles;
 
-        if(transform.localEulerAngles.z > 50 && transform.localEulerAngles.z < 90)
+        Vector3 stopRotation = new Vector3(0, 0, 180);
+
+
+        if ((transform.eulerAngles.z > flt_MinRotatinToReset &&  transform.eulerAngles.z < flt_MaxRotationToReset))
         {
             float fltCurrentTime = 0;
-            while(fltCurrentTime < 1)
+            while (fltCurrentTime < 1)
             {
-                fltCurrentTime += Time.deltaTime / 1;
+                fltCurrentTime += Time.deltaTime / 0.5f;
 
-                transform.localEulerAngles = Vector3.Slerp(startVector, targetVector, fltCurrentTime);
+                transform.eulerAngles = Vector3.Slerp(startVector, stopRotation, fltCurrentTime);
                 yield return null;
             }
-            transform.localEulerAngles = targetVector;
+            transform.eulerAngles = stopRotation;
+            transform.eulerAngles = new Vector3(0,0,Random.Range(0,15));
         }
     }
 
-    private IEnumerator RotatePaddle()
+    
+    IEnumerator RotatePaddleRightSIde()
     {
-        Quaternion startVector = transform.localRotation;
-        Quaternion stopVector = Quaternion.Euler(0, 0, 180 );
-        Quaternion targetVector = Quaternion.Euler(0, 0, 270);
-        Quaternion reachVector = Quaternion.Euler(0, 0, flt_RotationRightANgle);
-
-        if (transform.localEulerAngles.z > flt_RotationRightANgle)
+        float currentRotation = transform.eulerAngles.z;
+        float targetRotation = flt_RotationRightANgle;
+        bool isRoate360 = false;
+        if (targetRotation < currentRotation)
         {
-            float fltCurrentTIme = 0;
-            while (fltCurrentTIme < 1)
-            {
-                fltCurrentTIme += Time.deltaTime / 0.2f;
-                transform.localRotation = Quaternion.Slerp(startVector, stopVector, fltCurrentTIme);
-                yield return null;
-            }
-            transform.localRotation = stopVector;
-            fltCurrentTIme = 0;
-            startVector = transform.localRotation;
-           while (fltCurrentTIme < 1)
-            {
-                fltCurrentTIme += Time.deltaTime / 0.2f;
-                transform.localRotation = Quaternion.Slerp(startVector, targetVector, fltCurrentTIme);
-                yield return null;
-            }
-            transform.localRotation = targetVector;
-            fltCurrentTIme = 0;
-            startVector = transform.localRotation;
-            while (fltCurrentTIme < 1)
-            {
-                fltCurrentTIme += Time.deltaTime / 0.2f;
-                transform.localRotation = Quaternion.Slerp(startVector, reachVector, fltCurrentTIme);
-                yield return null;
-            }
-            transform.localRotation = reachVector;
+            isRoate360 = true;
+            targetRotation += 180;
+        }
+
+        while (targetRotation > currentRotation)
+        {
+            float rotationAmount = rotationSpeed * Time.deltaTime;
+            transform.Rotate(0f, 0f, rotationAmount);
+            currentRotation += rotationAmount;
+            yield return null;
+        }
+
+        if (isRoate360)
+        {
+            currentRotation -= 180;
+            targetRotation -= 180;
+            transform.eulerAngles = new Vector3(0, 0, currentRotation);
         }
     }
+
+    IEnumerator RotatePaddleLeftSide()
+    {
+        float currentRotation = transform.eulerAngles.z;
+        float targetRotation = flt_RotationLeftAngle;
+        bool isRotate360 = false;
+        if(targetRotation < currentRotation)
+        {
+            //Debug.Log("Current ROtation is big");
+           // Debug.Log("Current Rotation is : " + currentRotation + " Target Rotation is : " + targetRotation);
+            isRotate360 = true;
+            targetRotation += 180;
+        }
+
+        while(targetRotation > currentRotation)
+        {
+            float rotationAmount = rotationSpeed * Time.deltaTime;
+            transform.Rotate(0, 0, rotationAmount);
+            currentRotation += rotationAmount;
+            yield return null;
+        }
+        if (isRotate360)
+        {
+            currentRotation -= 180;
+            targetRotation -= 180;
+            transform.eulerAngles = new Vector3(0, 0, currentRotation);
+        }
+
+    }
+
 
     public float CaclulatePaddleForceForBall(Vector2 _traget)
     {
         isHitBall = true;
         isBallInRange = false;
+        canRotateRight = true;
+        canRotateLeft = true;
         if (isBatting)
         {
             canPaddleResetRotation = true;/*
