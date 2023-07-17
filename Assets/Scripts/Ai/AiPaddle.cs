@@ -29,6 +29,7 @@ public class AiPaddle : MonoBehaviour
 
 
     [Header("Require Components")]
+    [SerializeField] private Collider2D myCollider;
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform tf_BatHitPoint;
     public Transform tf_LeftSwingPoint;
@@ -333,6 +334,7 @@ public class AiPaddle : MonoBehaviour
 
     public float CaclulatePaddleForceForBall(Vector2 _traget)
     {
+       
         isHitBall = true;
         isBallInRange = false;
         canRotateRight = true;
@@ -371,6 +373,7 @@ public class AiPaddle : MonoBehaviour
 
     }
 
+    
     public float CalculateDistanceFromSwingPoints(Vector3 _traget)
     {
         if (!isBatting)

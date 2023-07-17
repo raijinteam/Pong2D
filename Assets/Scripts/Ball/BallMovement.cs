@@ -70,19 +70,14 @@ public class BallMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if(ball_Rb.velocity.y < 1 && ball_Rb.velocity.y > -1)
-        {
-          //  Debug.Log("ball velocity is low : " + ball_Rb.velocity.y);
+        if (ball_Rb.velocity.y < 1 && ball_Rb.velocity.y > -1) {
+            //  Debug.Log("ball velocity is low : " + ball_Rb.velocity.y);
             //ball_Rb.AddForce(new Vector2( ball_Rb.velocity.x, ball_Rb.velocity.y * flt_MaxWallReflectionAngle));
             ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y * flt_MaxWallReflectionAngle);
         }
 
-        if (isSwing)
-        {
-            float xDirection = Mathf.Sin(flt_SwingAngle);
-            float yDirection = Mathf.Cos(flt_SwingAngle);
+        if (isSwing) {
 
-            Vector2 swingDirection = new Vector2(xDirection * fltSwingForce, transform.position.y);
 
 
             swingDir = ball_Rb.velocity.x + fltSwingForce * Time.deltaTime;
@@ -123,10 +118,13 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(BottomWall))
         {
+
+            Debug.Log("Before" + dirction.right);
             dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
             dirction.right = dir;
-            Debug.Log("Touch With BottamWall");
-           
+            Debug.Log("After" + dirction.right);
+
+
             GameManager.instance.aiPaddle.isHitBall = false;
             canAddRuns = false;
             ball_Rb.velocity = Vector2.zero;
@@ -138,7 +136,7 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(Player))
         {
-           
+            dirction.right = -dirction.right;
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
@@ -168,8 +166,11 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(AI))
         {
-            dirction.right = -dirction.right;
+
+
+            dirction.right = collision.contacts[0].normal;
             canAddRuns = false;
+            
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 
@@ -184,6 +185,7 @@ public class BallMovement : MonoBehaviour
                 canAddRuns = true;
             }
 
+            
             aiPaddle.CaclulatePaddleForceForBall(transform.position);
 
             float totalForce = aiPaddle.CaclulatePaddleForceForBall(transform.position);
@@ -193,7 +195,23 @@ public class BallMovement : MonoBehaviour
             ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed * totalForce, ForceMode2D.Impulse);
             aiPaddle.SetRandomAngleAndPostion();
         }
-       
+
+        if (collision.gameObject.CompareTag("BounceWalls")) {
+            Debug.Log("Before" + dirction.right);
+            dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
+            dirction.right = dir;
+            Debug.Log("After" + dirction.right);
+
+
+            GameManager.instance.aiPaddle.isHitBall = false;
+            canAddRuns = false;
+            ball_Rb.velocity = Vector2.zero;
+            ball_Rb.angularVelocity = 0;
+
+
+            ball_Rb.AddForce(dirction.right * flt_BallMoveSpeed, ForceMode2D.Impulse); // get batsman speed
+        }
+
     }
 
 

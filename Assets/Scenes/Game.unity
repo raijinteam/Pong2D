@@ -570,12 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791f588ffe960194aadd183b1b648fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRotation: 50
-  flt_StartRotation: 0
-  flt_RotationSpeed: 0
-  IsRotate360: 0
-  rotationAmount: 0
-  moduleValue360: 0
+  dircetion: {fileID: 0}
 --- !u!212 &62148107
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8557,6 +8552,11 @@ MonoBehaviour:
   ui_PlayScren: {fileID: 1225489284}
   ui_TimerScreen: {fileID: 1225862895}
   ui_GameOver: {fileID: 1646689322}
+--- !u!61 &2003670217 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 4810096993490370894, guid: 2dfc9eb71666ad14d9b4b6426c84bc31, type: 3}
+  m_PrefabInstance: {fileID: 4810096994202501851}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2028875370
 GameObject:
   m_ObjectHideFlags: 0
@@ -9113,6 +9113,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4810096993490370888, guid: 2dfc9eb71666ad14d9b4b6426c84bc31, type: 3}
+      propertyPath: myCollider
+      value: 
+      objectReference: {fileID: 2003670217}
+    - target: {fileID: 4810096993490370888, guid: 2dfc9eb71666ad14d9b4b6426c84bc31, type: 3}
       propertyPath: aiDifficulty
       value: 2
       objectReference: {fileID: 0}
@@ -9166,7 +9170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4810096993490370888, guid: 2dfc9eb71666ad14d9b4b6426c84bc31, type: 3}
       propertyPath: flt_RotationDelay
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4810096993490370888, guid: 2dfc9eb71666ad14d9b4b6426c84bc31, type: 3}
       propertyPath: flt_RotationSpeed
