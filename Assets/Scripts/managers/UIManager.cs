@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+
     public static UIManager instance;
-
-    public PlayerScreenUI ui_PlayScren;
-    public TimerScreenUI ui_TimerScreen;
-    public GameOverUI ui_GameOver;
-
 
     private void Awake()
     {
-        if(instance != this)
-        {
-            instance = this;
-        }
+        instance = this;
     }
+
+    public GameObject allMenus;
+    public HomePanelUI ui_HomePanel;
+    public PlauerMatchMakerUI ui_MatchMaker;
+    public GameOverUI ui_GameOver;
+    public PlayerScreenUI ui_PlayScreen;
+    public TimerScreenUI ui_TimeScreen;
+
 }

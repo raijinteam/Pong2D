@@ -28,7 +28,7 @@ public class GameOverUI : MonoBehaviour
     {
         Time.timeScale = 1;
         this.gameObject.SetActive(false);
-        UIManager.instance.ui_PlayScren.gameObject.SetActive(true);
+        UIManager.instance.ui_PlayScreen.gameObject.SetActive(true);
         GameManager.instance.ResetScoreWHenGameover();
     }
 }

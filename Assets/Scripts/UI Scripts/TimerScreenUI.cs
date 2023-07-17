@@ -37,7 +37,7 @@ public class TimerScreenUI : MonoBehaviour
         {
             GameManager.instance.isGamePlaying = true;
             this.gameObject.SetActive(false);
-            UIManager.instance.ui_PlayScren.gameObject.SetActive(true);
+            UIManager.instance.ui_PlayScreen.gameObject.SetActive(true); 
             GameManager.instance.SpawnNewBall();
             GameManager.instance.player.gameObject.SetActive(true);
             GameManager.instance.aiPaddle.gameObject.SetActive(true);

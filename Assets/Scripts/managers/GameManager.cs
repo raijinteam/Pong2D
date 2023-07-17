@@ -53,15 +53,51 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ball = Instantiate(pf_Ball.gameObject, transform.position, Quaternion.identity);
+        if(isGamePlaying)
+            ball = Instantiate(pf_Ball.gameObject, transform.position, Quaternion.identity);
     }
 
     private void Update()
     {
+        //Just FOr Testing
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 1 , 1);
+            SlotsManager.Instance.CheckForSecondSlotIsEmpty();
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 1, 0);
+            SlotsManager.Instance.CheckForStartTimeSlot2();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY , 1);
+            SlotsManager.Instance.CheckForFirstSlotIsEmpty();
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME , 0);
+            SlotsManager.Instance.CheckForStartTimeSlot1();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 2, 1);
+            SlotsManager.Instance.CheckForThiredSlotIsEmpty();
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 2, 0);
+            SlotsManager.Instance.CheckForStartTimeSlot3();
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 3, 1);
+            SlotsManager.Instance.CheckForForthSlotIsEmpty();
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 3, 0);
+            SlotsManager.Instance.CheckForStartTimeSlot4();
+        }
+
+
+
         if(isGamePlaying){
             isGameTimeOver = false;
             currentActiveGameTime += Time.deltaTime;
-            UIManager.instance.ui_PlayScren.txt_GameTime.text = currentActiveGameTime.ToString("00:00");
+            UIManager.instance.ui_PlayScreen.txt_GameTime.text = currentActiveGameTime.ToString("00:00");
             if(currentActiveGameTime >= flt_ActiveGameTime)
             {
                 //Check if player batting or bowing
@@ -76,6 +112,17 @@ public class GameManager : MonoBehaviour
             CheckForTargetIsChase();
         }
     }
+
+    public void StartGame()
+    {
+        isGamePlaying = true;
+        SpawnNewBall();
+        player.gameObject.SetActive(true);
+        aiPaddle.gameObject.SetActive(true);
+        UIManager.instance.ui_PlayScreen.gameObject.SetActive(true);
+        UIManager.instance.allMenus.SetActive(false);
+    }
+
 
     //CHeck for wickets 
     public void CheckIsAnyBatsmanRemaing()
@@ -104,7 +151,7 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(false);
             aiPaddle.gameObject.SetActive(false);
             UIManager.instance.ui_GameOver.gameObject.SetActive(true);
-            UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
+            UIManager.instance.ui_PlayScreen.gameObject.SetActive(false);
         } 
     }
 
@@ -138,15 +185,15 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(false);
             aiPaddle.gameObject.SetActive(false);
             UIManager.instance.ui_GameOver.gameObject.SetActive(true);
-            UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
+            UIManager.instance.ui_PlayScreen.gameObject.SetActive(false);
         }
         else
         {
 
             inningIndex++;
 
-            UIManager.instance.ui_TimerScreen.gameObject.SetActive(true);
-            UIManager.instance.ui_PlayScren.gameObject.SetActive(false);
+            UIManager.instance.ui_TimeScreen.gameObject.SetActive(true);
+            UIManager.instance.ui_PlayScreen.gameObject.SetActive(false);
         }
         SwapPositions();
 
@@ -208,8 +255,8 @@ public class GameManager : MonoBehaviour
     {
         roundRunsCount = 0;
         roundWicketCount = 0;
-        UIManager.instance.ui_PlayScren.txt_Score.text = roundRunsCount.ToString();
-        UIManager.instance.ui_PlayScren.txt_Wickets.text = roundWicketCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Score.text = roundRunsCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Wickets.text = roundWicketCount.ToString();
     }
 
     public void ResetScoreWHenGameover()
@@ -226,8 +273,8 @@ public class GameManager : MonoBehaviour
         aiTotalWickets = 0;
         roundRunsCount = 0;
         roundWicketCount = 0;
-        UIManager.instance.ui_PlayScren.txt_Score.text = roundRunsCount.ToString();
-        UIManager.instance.ui_PlayScren.txt_Wickets.text = roundWicketCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Score.text = roundRunsCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Wickets.text = roundWicketCount.ToString();
         SpawnNewBall();
     }
 
@@ -242,7 +289,7 @@ public class GameManager : MonoBehaviour
         {
             aiTotalWickets++;
         }
-        UIManager.instance.ui_PlayScren.txt_Wickets.text = roundWicketCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Wickets.text = roundWicketCount.ToString();
         CheckIsAnyBatsmanRemaing();
     }
 
@@ -253,7 +300,7 @@ public class GameManager : MonoBehaviour
         {
             CheckForTargetIsChase();
         }
-        UIManager.instance.ui_PlayScren.txt_Score.text = roundRunsCount.ToString();
+        UIManager.instance.ui_PlayScreen.txt_Score.text = roundRunsCount.ToString();
         if (player.GetComponent<PlayerPaddleMovement>().isBatting)
         {
             playerTotalRuns += runs;
