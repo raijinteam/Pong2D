@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cde93ca9e91f82a4bb4493d32f0c9881, type: 3}
+  m_Name: Misson 1
+  m_EditorClassIdentifier: 
+  img_RewardIcon: {fileID: 21300000, guid: 54144aa0bc8ad3d4a86ea4bfb3ee4788, type: 3}
+  str_RewardName: Mission 1
+  str_Description: Collect 30 Coins
+  rewardAmount: 50
+  currentLevel: 0
+  missionCompeleteAmount: 14000000280000003c000000460000005a000000

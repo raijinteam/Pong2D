@@ -59,41 +59,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        //Just FOr Testing
-        if (Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 1 , 1);
-            SlotsManager.Instance.CheckForSecondSlotIsEmpty();
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 1, 0);
-            SlotsManager.Instance.CheckForStartTimeSlot2();
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY , 1);
-            SlotsManager.Instance.CheckForFirstSlotIsEmpty();
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME , 0);
-            SlotsManager.Instance.CheckForStartTimeSlot1();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 2, 1);
-            SlotsManager.Instance.CheckForThiredSlotIsEmpty();
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 2, 0);
-            SlotsManager.Instance.CheckForStartTimeSlot3();
-        }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_EMPTY + 3, 1);
-            SlotsManager.Instance.CheckForForthSlotIsEmpty();
-            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_START_TIME + 3, 0);
-            SlotsManager.Instance.CheckForStartTimeSlot4();
+            AchievementManager.Instance.IncreaseAchievementCurrentValue(1, 10);
         }
 
 
-
+        
         if(isGamePlaying){
             isGameTimeOver = false;
             currentActiveGameTime += Time.deltaTime;

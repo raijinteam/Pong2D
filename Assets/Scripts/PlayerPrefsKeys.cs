@@ -10,7 +10,12 @@ public class PlayerPrefsKeys
 
     public static string KEY_GAME_QUIT_TIME = "GameQuitTime";
 
+
+    //Achievement CUrrent value
+    public static string KEY_ACHIEVEMENT_CURRENT_VALUE = "AchievementCurrentValue";
+
     //Reward Slot
+    public static string KEY_REWARD_SLOT_STATE = "RewardSlotState";
     public static string KEY_REWARD_SLOT_TIME = "RewadSlotTime";
     public static string KEY_REWARD_SLOT_EMPTY = "RewardSlotEmpty";
     public static string KEY_REWARD_SLOT_START_TIME = "RewardSlotStartTime";
