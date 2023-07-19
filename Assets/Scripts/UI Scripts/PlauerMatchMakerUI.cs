@@ -11,9 +11,14 @@ public class PlauerMatchMakerUI : MonoBehaviour
 
     private float currentDelayTime;
 
-    private void Start()
+    private void OnEnable()
     {
         currentDelayTime = flt_DelayTime;
+        
+    }
+
+    private void Start()
+    {
     }
 
     // Update is called once per frame
@@ -24,7 +29,8 @@ public class PlauerMatchMakerUI : MonoBehaviour
         if(currentDelayTime <= 0)
         {
             this.gameObject.SetActive(false);
-            GameManager.instance.StartGame();
+            UIManager.instance.ui_TimeScreen.gameObject.SetActive(true);
+            //GameManager.instance.StartGame();
             currentDelayTime = flt_DelayTime;
         }
     }

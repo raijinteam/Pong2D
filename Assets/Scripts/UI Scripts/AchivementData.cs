@@ -12,13 +12,15 @@ public class AchivementData : MonoBehaviour
 
     [Header("Daily Mission Data")]
 
+    public int index;
     public Image img_RewardIcon;
     public TextMeshProUGUI txt_Description;
     public TextMeshProUGUI txt_currentMissionAount; // how many points in current mission
     public TextMeshProUGUI txt_RequiredAmount; // how many points required to complate mission
+    public TextMeshProUGUI txt_RewardAmount;
     [SerializeField] private Sprite img_DailyMissionComplate;
     public Slider slider_RewardComplate;
-    [SerializeField] private Button btn_Claim;
+    public Button btn_Claim;
 
     public bool isDailyMissionComplate;
 
@@ -26,10 +28,12 @@ public class AchivementData : MonoBehaviour
 
     public void OnClick_DailyMissionClaimButton()
     {
-        btn_Claim.interactable = false;/*
-        UiManager.instance.rewardSummaryUI.SetRewardSummaryData(img_RewardIcon.sprite, txt_RewardAmount.text);
-        UiManager.instance.rewardSummaryUI.gameObject.SetActive(true);*/
-        slider_RewardComplate.value = 0.99f;
-        img_RewardIcon.sprite = img_DailyMissionComplate;
+        AchievementManager.Instance.canIncreaseValueOfCurrentAchivement = true;
+        UIManager.instance.ui_RewardSummary.SetRewardSummaryData(img_RewardIcon.sprite, txt_RewardAmount.text);
+        UIManager.instance.ui_RewardSummary.gameObject.SetActive(true);
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index, 0);
+        slider_RewardComplate.value = 0f;
+        btn_Claim.gameObject.SetActive(false);
+        AchievementManager.Instance.SetAchievementData(index);
     }
 }

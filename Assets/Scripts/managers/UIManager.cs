@@ -19,6 +19,8 @@ public class UIManager : MonoBehaviour
     public PlayerScreenUI ui_PlayScreen;
     public TimerScreenUI ui_TimeScreen;
     public RewardSummaryUI ui_RewardSummary;
-    public AchievementManager ui_Achievement;
-
+    public AchivementUI ui_Achievement;
+    public DailyRewardUI ui_DailyReward;
+    public RewardSlotsUI ui_RewardSlot;
+    public SlotTimerUI ui_SlotTimer;
 }

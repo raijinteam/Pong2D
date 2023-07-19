@@ -197,10 +197,10 @@ public class BallMovement : MonoBehaviour
         }
 
         if (collision.gameObject.CompareTag("BounceWalls")) {
-            Debug.Log("Before" + dirction.right);
+            //Debug.Log("Before" + dirction.right);
             dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
             dirction.right = dir;
-            Debug.Log("After" + dirction.right);
+            //Debug.Log("After" + dirction.right);
 
 
             GameManager.instance.aiPaddle.isHitBall = false;

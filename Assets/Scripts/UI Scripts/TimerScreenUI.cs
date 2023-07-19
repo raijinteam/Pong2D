@@ -12,7 +12,9 @@ public class TimerScreenUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.instance.GetBall.gameObject.SetActive(false);
+        if(GameManager.instance.GetBall != null)
+            GameManager.instance.GetBall.gameObject.SetActive(false);
+
         currentTime = flt_WaitTime;
         if (GameManager.instance.isPlayerBatting)
         {
@@ -35,12 +37,13 @@ public class TimerScreenUI : MonoBehaviour
         txt_WaitTimer.text = currentTime.ToString("F0");
         if (currentTime <= 0)
         {
-            GameManager.instance.isGamePlaying = true;
+            //GameManager.instance.isGamePlaying = true;
             this.gameObject.SetActive(false);
-            UIManager.instance.ui_PlayScreen.gameObject.SetActive(true); 
-            GameManager.instance.SpawnNewBall();
-            GameManager.instance.player.gameObject.SetActive(true);
-            GameManager.instance.aiPaddle.gameObject.SetActive(true);
+            GameManager.instance.StartGame();
+            //UIManager.instance.ui_PlayScreen.gameObject.SetActive(true); 
+            //GameManager.instance.SpawnNewBall();
+            //GameManager.instance.player.gameObject.SetActive(true);
+            //GameManager.instance.aiPaddle.gameObject.SetActive(true);
 
         }
     }

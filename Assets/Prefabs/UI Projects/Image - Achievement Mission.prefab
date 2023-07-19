@@ -592,10 +592,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   achivementSO: {fileID: 11400000, guid: dba494b9f9b558949858860f74288e0c, type: 2}
+  index: 0
   img_RewardIcon: {fileID: 1165151636383750551}
   txt_Description: {fileID: 1165151635767846051}
   txt_currentMissionAount: {fileID: 7672203748944834919}
   txt_RequiredAmount: {fileID: 4802757791390027512}
+  txt_RewardAmount: {fileID: 1165151634974828280}
   img_DailyMissionComplate: {fileID: 0}
   slider_RewardComplate: {fileID: 1165151635847797819}
   btn_Claim: {fileID: 1165151636386529148}
@@ -1218,7 +1220,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1165151636386529147}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -7692615206296335283}
+        m_TargetAssemblyTypeName: AchivementData, Assembly-CSharp
+        m_MethodName: OnClick_DailyMissionClaimButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2106029945395749958
 GameObject:
   m_ObjectHideFlags: 0

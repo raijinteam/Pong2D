@@ -17,4 +17,4 @@ MonoBehaviour:
   str_Description: Collect 30 Coins
   rewardAmount: 50
   currentLevel: 0
-  missionCompeleteAmount: 7b000000280000003c000000460000005a000000
+  missionCompeleteAmount: 32000000280000003c000000460000005a000000

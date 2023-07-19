@@ -16,13 +16,11 @@ public enum SlotState
 
 public class RewardSlotData : MonoBehaviour
 {
-    [SerializeField] private bool isFreeSlot;
 
     public SlotState slotState;
     public string name;
     public Sprite icon;
     public float timer;
-
-
-
+    public int requireAmountForUnlock;
+    public int numberOfRewards;
 }

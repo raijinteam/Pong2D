@@ -19,4 +19,14 @@ public class HomeScreenUi : MonoBehaviour
         this.gameObject.SetActive(false);
         UIManager.instance.ui_HomePanel.ui_Level.gameObject.SetActive(true);
     }
+
+    public void OnClick_OpenDailyRewards()
+    {
+        UIManager.instance.ui_DailyReward.gameObject.SetActive(true);
+    }
+
+    public void OnClick_OpenAchivements()
+    {
+        UIManager.instance.ui_Achievement.gameObject.SetActive(true);
+    }
 }

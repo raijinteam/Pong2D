@@ -14,6 +14,10 @@ public class PlayerPrefsKeys
     //Achievement CUrrent value
     public static string KEY_ACHIEVEMENT_CURRENT_VALUE = "AchievementCurrentValue";
 
+    //Total Day for daily rewards
+    public static string KEY_DAYS_COUNT = "DayCount";
+
+
     //Reward Slot
     public static string KEY_REWARD_SLOT_STATE = "RewardSlotState";
     public static string KEY_REWARD_SLOT_TIME = "RewadSlotTime";

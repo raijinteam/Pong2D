@@ -6,8 +6,6 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
 
-    [Header("On Enable Error")]
-    [SerializeField] private SlotsManager slot;
 
     public int gameCoins;
 
@@ -15,9 +13,14 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        Instance = this;    
+    }
 
 
+
+    // Start is called before the first frame update
+    private void Start()
+    {
         if (PlayerPrefs.HasKey(PlayerPrefsKeys.KEY_GAMECOINS))
         {
             GetPlayerData();
@@ -26,14 +29,6 @@ public class DataManager : MonoBehaviour
         {
             SetPlayerData();
         }
-    }
-
-
-
-    // Start is called before the first frame update
-    void OnEnable()
-    {
-       
     }
 
 
@@ -53,15 +48,23 @@ public class DataManager : MonoBehaviour
 
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, gameCoins);
 
+        //Set Open Day For Daily Reward
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, 0);
+
+
         //Set Slot State Empty
-        for(int i =0; i < SlotsManager.Instance.allSlots.Length; i++)
+        for(int i =0; i < 4; i++)
         {
-            SetRewardSlotState(i, SlotState.Empty);
-            PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, SlotsManager.Instance.allSlots[i].timer);
+             SetRewardSlotState(i, SlotState.Empty);
+            //SlotsManager.Instance.allSlots[i].slotState = SlotState.Empty;
+            PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, 0);
+            float playerPrefsTime = PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i);
+            TimeManager.Instance.SetSlotTimeData(i, playerPrefsTime);
+            Debug.Log("Reward Slot TIme : " + PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i));
         }
 
         //Set Achievement Current Value set 0
-        for(int i =0; i < AchievementManager.Instance.all_Archivements.Length; i++)
+        for (int i = 0; i < AchievementManager.Instance.all_Archivements.Length; i++)
         {
             PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + i, 0);
         }
@@ -69,8 +72,24 @@ public class DataManager : MonoBehaviour
 
     private void GetPlayerData()
     {
-        
+        for(int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
+        {
+            string state = PlayerPrefs.GetString(PlayerPrefsKeys.KEY_REWARD_SLOT_STATE + i);
+            SlotsManager.Instance.SetSlotState(i, state);
 
+            float playerPrefsTime = PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i);
+
+            TimeManager.Instance.SetSlotTimeData(i, playerPrefsTime);
+        }
+
+
+    }
+
+
+
+    public float RewardSlotTimePlayerPrefs(int index)
+    {
+        return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index);
     }
 
     public void SetRewardSlotState(int index, SlotState state)
@@ -84,4 +103,19 @@ public class DataManager : MonoBehaviour
         Debug.Log("Player Prefs Clear");
         PlayerPrefs.DeleteAll();
     }
+
+    #region PLAYERPREFS SET DATA
+
+   
+
+    #endregion
+
+    #region PLAYERPREFS GET DATA
+
+    public string GetGameQuitTime()
+    {
+        return PlayerPrefs.GetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME);
+    }
+
+    #endregion
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[DefaultExecutionOrder(-2)]
 public class TimeManager : MonoBehaviour
 {
 
@@ -16,21 +17,14 @@ public class TimeManager : MonoBehaviour
         Instance = this;
     }
 
-    // Start is called before the first frame update
-    void Start()
+
+    public void SetSlotTimeData(int _slotIndex , float _rewardSlotTime)
     {
-        //Check For time WHen Game is NOt Running
-
-        for(int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
+        currentSlotTime[_slotIndex] = _rewardSlotTime;
+        if (SlotsManager.Instance.allSlots[_slotIndex].slotState == SlotState.TimerStart)
         {
-            //Debug.Log("Player prefs Data : " + i + " " + PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i));
-            currentSlotTime[i] = PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i);
-            if(SlotsManager.Instance.allSlots[i].slotState == SlotState.TimerStart)
-            {
-                CalculateSlotTimeWhenGameNotRunning(i);
-            }
+            CalculateSlotTimeWhenGameNotRunning(_slotIndex);
         }
-
     }
 
     // Update is called once per frame
@@ -44,8 +38,9 @@ public class TimeManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Set Player prefs Data
+        // Send To DATAMANAGER
 
+        //Set Player prefs Data
         for (int i =0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
             PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, currentSlotTime[i]);
@@ -59,7 +54,9 @@ public class TimeManager : MonoBehaviour
 
     private void CalculateSlotTimeWhenGameNotRunning(int index)
     {
-        string gameQuitTimeString = PlayerPrefs.GetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME);
+        //string gameQuitTimeString = PlayerPrefs.GetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME);
+
+        string gameQuitTimeString = DataManager.Instance.GetGameQuitTime();
 
         if (!gameQuitTimeString.Equals(""))
         {
@@ -84,6 +81,7 @@ public class TimeManager : MonoBehaviour
                     Debug.Log("Reward Unlocked");
                    
                     DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
+                    UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
                     currentSlotTime[index] = SlotsManager.Instance.allSlots[index].timer;
                 }
             }
@@ -103,6 +101,7 @@ public class TimeManager : MonoBehaviour
                 Debug.Log("Slot Unlocked");
                
                 DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
+                UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
                 currentSlotTime[index] = SlotsManager.Instance.allSlots[index].timer;
             }
         }

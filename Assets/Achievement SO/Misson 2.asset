@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   img_RewardIcon: {fileID: 21300000, guid: 54144aa0bc8ad3d4a86ea4bfb3ee4788, type: 3}
   str_RewardName: Mission 1
-  str_Description: Collect 30 Coins
+  str_Description: 5 Goles in one game
   rewardAmount: 50
-  currentLevel: 0
-  missionCompeleteAmount: 12a10000280000003c000000460000005a000000
+  currentLevel: 1
+  missionCompeleteAmount: 1e000000280000003c000000460000005a000000
