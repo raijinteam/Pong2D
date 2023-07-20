@@ -29,11 +29,13 @@ public class AchivementData : MonoBehaviour
     public void OnClick_DailyMissionClaimButton()
     {
         AchievementManager.Instance.canIncreaseValueOfCurrentAchivement = true;
+        UIManager.instance.ui_HomePanel.ui_HomeScreen.img_RedDot.gameObject.SetActive(false);
         UIManager.instance.ui_RewardSummary.SetRewardSummaryData(img_RewardIcon.sprite, txt_RewardAmount.text);
         UIManager.instance.ui_RewardSummary.gameObject.SetActive(true);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index, 0);
         slider_RewardComplate.value = 0f;
         btn_Claim.gameObject.SetActive(false);
+        AchievementManager.Instance.IncreaseCurrentAchivementLevel(index);
         AchievementManager.Instance.SetAchievementData(index);
     }
 }

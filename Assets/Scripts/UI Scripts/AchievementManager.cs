@@ -6,8 +6,6 @@ public class AchievementManager : MonoBehaviour
 {
     public static AchievementManager Instance;
 
-    public int index;
-
     public AchievementSO[] all_Archivements; // REFERANCE OF ALL ACTIVE DAILY MISSIONS
 
     [SerializeField] private GameObject pf_Achievement;
@@ -17,9 +15,7 @@ public class AchievementManager : MonoBehaviour
 
 
     public bool canIncreaseValueOfCurrentAchivement;
-
-    private List<AchievementSO> listOfDailyMissionSO = new List<AchievementSO>();
-
+    public bool isAchievementRewardCollected;
 
 
     public List<AchivementData> list_ActiveAchivementData = new List<AchivementData>();
@@ -35,33 +31,40 @@ public class AchievementManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+
         canIncreaseValueOfCurrentAchivement = true;
-        /*for (int i = 0; i < all_Archivements.Length; i++)
-        {
-            listOfDailyMissionSO.Add(all_Archivements[i]);
-        }*/
-        //ShuffleList(listOfDailyMissionSO);
+
 
         for (int i = 0; i < all_Archivements.Length; i++)
         {
-            dailyMission = Instantiate(pf_Achievement, transform.position, Quaternion.identity , parentOfAchivement);
+            dailyMission = Instantiate(pf_Achievement, transform.position, Quaternion.identity, parentOfAchivement);
             achievementData = dailyMission.GetComponent<AchivementData>();
             list_ActiveAchivementData.Add(achievementData);
-           // Debug.Log(all_Archivements[i].rewardAmount);
-            
-            achievementData.txt_RewardAmount.text = "x"+all_Archivements[i].rewardAmount.ToString();
+
+            achievementData.txt_RewardAmount.text = "x" + all_Archivements[i].rewardAmount.ToString();
             achievementData.slider_RewardComplate.value = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + i);
             achievementData.slider_RewardComplate.maxValue = all_Archivements[i].missionCompeleteAmount[all_Archivements[i].currentLevel];
             SetAchievementData(i);
             achievementData.index = i;
             achievementData.btn_Claim.gameObject.SetActive(false);
+
+            CheckIfAchievementRewardCollected(i);
+
+            if (achievementData.isDailyMissionComplate)
+            {
+                Debug.Log("In if COndidison");
+                achievementData.btn_Claim.gameObject.SetActive(true);
+                UIManager.instance.ui_HomePanel.ui_HomeScreen.img_RedDot.gameObject.SetActive(true);
+            }
         }
+
     }
 
-
+     
     public void SetAchievementData(int index)
     {
-       // Debug.Log("Set Data Of : " + index);
+        // Debug.Log("Set Data Of : " + index);
         list_ActiveAchivementData[index].img_RewardIcon.sprite = all_Archivements[index].img_RewardIcon;
         list_ActiveAchivementData[index].txt_Description.text = all_Archivements[index].str_Description;
         list_ActiveAchivementData[index].txt_currentMissionAount.text = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index).ToString();
@@ -70,12 +73,47 @@ public class AchievementManager : MonoBehaviour
         list_ActiveAchivementData[index].txt_currentMissionAount.text = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index).ToString();
     }
 
-    public void IncreaseAchievementCurrentValue(int index , float _increaseAmount)
+
+    public void CheckIfAchievementRewardCollected(int index)
+    {
+
+        if (DataManager.Instance.GetArchivmentRewardState(index) == 0)
+        {
+            Debug.Log("First False");
+
+            list_ActiveAchivementData[index].isDailyMissionComplate = false;
+            list_ActiveAchivementData[index].btn_Claim.gameObject.SetActive(false);
+            //UIManager.instance.ui_HomePanel.ui_HomeScreen.img_RedDot.gameObject.SetActive(false);
+        }
+        else
+        {
+            list_ActiveAchivementData[index].isDailyMissionComplate = true;
+            list_ActiveAchivementData[index].btn_Claim.gameObject.SetActive(true);
+            UIManager.instance.ui_HomePanel.ui_HomeScreen.img_RedDot.gameObject.SetActive(true);
+
+        }
+    }
+
+
+    public void IncreaseCurrentAchivementLevel(int index)
+    {
+        all_Archivements[index].currentLevel++;
+
+        DataManager.Instance.SetArchivmentRewardState(index, 0);
+        CheckIfAchievementRewardCollected(index);
+
+        if (all_Archivements[index].currentLevel >= 5)
+        {
+            all_Archivements[index].currentLevel = 0;
+            list_ActiveAchivementData.Remove(list_ActiveAchivementData[index]);
+        }
+    }
+
+    public void IncreaseAchievementCurrentValue(int index, float _increaseAmount)
     {
         if (canIncreaseValueOfCurrentAchivement)
         {
             float currentValue = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index) + (int)_increaseAmount;
-            //Debug.Log("Current Valye : " + currentValue);
             PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index, (int)currentValue);
             list_ActiveAchivementData[index].txt_currentMissionAount.text = currentValue.ToString();
             list_ActiveAchivementData[index].slider_RewardComplate.value = currentValue;
@@ -84,18 +122,12 @@ public class AchievementManager : MonoBehaviour
             if (currentValue >= all_Archivements[index].missionCompeleteAmount[all_Archivements[index].currentLevel])
             {
                 canIncreaseValueOfCurrentAchivement = false;
-                Debug.Log("Increase Level");
-                list_ActiveAchivementData[index].btn_Claim.gameObject.SetActive(true);
-                all_Archivements[index].currentLevel++;
-                if (all_Archivements[index].currentLevel >= 5)
-                {
-                    all_Archivements[index].currentLevel = 0;
-                    list_ActiveAchivementData.Remove(list_ActiveAchivementData[index]);
-
-                }
+                list_ActiveAchivementData[index].isDailyMissionComplate = true;
+                DataManager.Instance.SetArchivmentRewardState(index, 1);
+                CheckIfAchievementRewardCollected(index);
             }
         }
-        
+
     }
 
 
@@ -106,7 +138,7 @@ public class AchievementManager : MonoBehaviour
         while (currentTime < 1)
         {
             currentTime = Time.deltaTime / 1;
-            if(currentTime > list_ActiveAchivementData[index].slider_RewardComplate.value)
+            if (currentTime > list_ActiveAchivementData[index].slider_RewardComplate.value)
             {
                 list_ActiveAchivementData[index].slider_RewardComplate.value++;
             }

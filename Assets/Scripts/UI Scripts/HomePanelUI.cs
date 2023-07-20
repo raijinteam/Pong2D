@@ -5,7 +5,7 @@ using UnityEngine;
 public class HomePanelUI : MonoBehaviour
 {
     public HomeScreenUi ui_HomeScreen;
-    public LevelUI ui_Level;
+    public AllLevelUI ui_Level;
 
 
     private void OnEnable()

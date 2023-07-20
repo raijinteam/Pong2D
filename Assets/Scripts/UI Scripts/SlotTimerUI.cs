@@ -47,6 +47,7 @@ public class SlotTimerUI : MonoBehaviour
         DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
         UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
         TimeManager.Instance.currentSlotTime[index] = SlotsManager.Instance.allSlots[index].timer;
+        SlotsManager.Instance.isAnotherSlotHasActiveTime = false;
     }
 
     public void OnClick_ReduceTimeWithAds()

@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LevelUI : MonoBehaviour
 {
-    [SerializeField] private Image[] all_Levels;
-
-
-
-   
-    public void OnClick_StartLevel()
-    {
-        this.gameObject.SetActive(false);
-        UIManager.instance.ui_MatchMaker.gameObject.SetActive(true);
-    }
+    public Image img_LevelIcon;
+    public TextMeshProUGUI txt_LevelName;
+    public TextMeshProUGUI txt_WinningTorphies;
+    public Slider slider_Trophies;
+    public TextMeshProUGUI txt_CurrentTrophies;
+    public TextMeshProUGUI txt_RequireTrophiesForIncreaseLevel;
+    public TextMeshProUGUI txt_LossingTrophies;
+    public TextMeshProUGUI txt_WinningPrice;
+    public TextMeshProUGUI txt_EntryFees;
 }

@@ -6,17 +6,21 @@ public class PlayerPrefsKeys
 {
     //Game Data
     public static string KEY_GAMECOINS = "Coins";
+    public static string KEY_TROPHIES = "Trophies";
 
+    public static string KEY_PLAYER_TOTAL_RUNS = "PlayerTotalRuns";
 
     public static string KEY_GAME_QUIT_TIME = "GameQuitTime";
 
 
     //Achievement CUrrent value
     public static string KEY_ACHIEVEMENT_CURRENT_VALUE = "AchievementCurrentValue";
+    public static string KEY_ACHIEVEMENT_REWARD_COLLECTED = "AchievementRewardCollected";
 
     //Total Day for daily rewards
     public static string KEY_DAYS_COUNT = "DayCount";
-
+    public static string KET_DAYTIME = "DayTime";
+    public static string KEY_DAILYREWARD_ACTIVE_TIME = "DailyRewardActiveTime";
 
     //Reward Slot
     public static string KEY_REWARD_SLOT_STATE = "RewardSlotState";

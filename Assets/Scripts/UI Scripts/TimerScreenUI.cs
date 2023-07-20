@@ -18,7 +18,7 @@ public class TimerScreenUI : MonoBehaviour
         currentTime = flt_WaitTime;
         if (GameManager.instance.isPlayerBatting)
         {
-            txt_Target.text = "Target : " +  (GameManager.instance.playerTotalRuns + 1).ToString();
+            txt_Target.text = "Target : " +  (GameManager.instance.playerTotalRunsInOneRound + 1).ToString();
         }
         else
         {

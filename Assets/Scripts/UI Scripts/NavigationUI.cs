@@ -43,7 +43,7 @@ public class NavigationUI : MonoBehaviour
             {
                 all_MenusBG[i].DOAnchorMin(new Vector2(startingPosition, all_MenusBG[i].anchorMin.y), animationDuration);
                 startingPosition += xPositionOffset - 0.1f;
-                all_MenusBG[i].DOAnchorMax(new Vector2(startingPosition, .7f), animationDuration);
+                all_MenusBG[i].DOAnchorMax(new Vector2(startingPosition, .8f), animationDuration);
 
                 all_MenuPanel[i].SetActive(false);
             }

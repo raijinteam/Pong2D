@@ -15,8 +15,8 @@ public class GameOverUI : MonoBehaviour
     {
         Time.timeScale = 0;
         txt_Winner.text = GameManager.instance.winnerName + " Wins";
-        string player1Runs = GameManager.instance.playerTotalRuns.ToString();
-        string player1Wickets = GameManager.instance.playerTotalWickets.ToString();
+        string player1Runs = GameManager.instance.playerTotalRunsInOneRound.ToString();
+        string player1Wickets = GameManager.instance.playerTotalWicketsInOneRound.ToString();
         string player2Runs = GameManager.instance.aiTotalRuns.ToString();
         string player2Wickets = GameManager.instance.aiTotalWickets.ToString();
 
@@ -30,5 +30,13 @@ public class GameOverUI : MonoBehaviour
         this.gameObject.SetActive(false);
         UIManager.instance.ui_PlayScreen.gameObject.SetActive(true);
         GameManager.instance.ResetScoreWHenGameover();
+    }
+
+
+    public void OnClick_Home()
+    {
+        Time.timeScale = 1;
+        this.gameObject.SetActive(false);
+        UIManager.instance.allMenus.SetActive(true);
     }
 }

@@ -23,4 +23,5 @@ public class UIManager : MonoBehaviour
     public DailyRewardUI ui_DailyReward;
     public RewardSlotsUI ui_RewardSlot;
     public SlotTimerUI ui_SlotTimer;
+    public UseableResourcesBarUI ui_UseableResouce;
 }

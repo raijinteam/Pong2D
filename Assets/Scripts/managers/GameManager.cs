@@ -12,34 +12,48 @@ public class GameManager : MonoBehaviour
     public AiPaddle aiPaddle;
     public PlayerData player;
 
+
+    [Header("All Levels Data")]
+    public int currentLevelIndex;
+    public int[] all_LevelsEntryFees;
+    public int[] all_LevelWinningPrice;
+    public int[] all_LevelWinningTrophies;
+    public int[] all_LevelLossingTrophies;
+    public int[] all_RequireTrophiesForLevelUp;
+
+
+    [Space]
     [Header("Game Properites")]
     public bool isGamePlaying;
     public bool isGameTimeOver;
+    public bool isDailyRewardCollected;
+    public bool isTargetChased; //flag for check target is chased
+    public string winnerName; // store winner name
+    public int inningIndex = 0; // store inning 
+
+    [Header("Active Rounds Properites")]
     [SerializeField] private float flt_ActiveGameTime; // When game start timer for game play
     public int roundWicketCount = 0; // total wickets in one inning
     public int roundRunsCount = 0; // total runs in one inning
     [SerializeField] private int maxWicketsForPlay; // the max wickets for complate one inning
-    public bool isPlayerBatting; // flag for check is player bet
-    public bool isAiBatting; // flag for check is ai bat
     public float currentActiveGameTime = 0; //current active game time
+    
 
+    [Header("Player All Properites")]
+    public int playerTotalRunsInOneRound; // player total run when player is batting
+    public int playerTotalWicketsInOneRound; // player total wickets in one round
+    public int playerTotalRuns;
+    private Vector3 playerPaddlePosition; // Store Player paddle position
+    public bool isPlayerBatting; // flag for check is player bet
 
-
-    public bool isTargetChased; //flag for check target is chased
-
-    public string winnerName; // store winner name
-
-    public int inningIndex = 0; // store inning 
-
-    public int playerTotalRuns; // player total run when player is batting
-    public int playerTotalWickets; // player total wickets in one round
+    [Header("Ai All Properites")]
+    public bool isAiBatting; // flag for check is ai bat
     public int aiTotalRuns; // ai total run when ai is batting
     public int aiTotalWickets; //ai Total Wickets in one round
-
     private Vector3 aiPaddlePosition; //Store Ai paddle position
-    private Vector3 playerPaddlePosition; // Store Player paddle position
 
 
+    [HideInInspector]
     [SerializeField] private GameObject ball;
 
     private void Awake()
@@ -53,7 +67,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if(isGamePlaying)
+        CheckForDailyRewardTImeIsStart();
+
+        playerTotalRuns = DataManager.Instance.GetPlayerTotalRuns();
+
+
+        if (isGamePlaying)
             ball = Instantiate(pf_Ball.gameObject, transform.position, Quaternion.identity);
     }
 
@@ -77,6 +96,14 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Game over");
                 ChangeInning();
                 currentActiveGameTime = 0;
+
+                //Set Player Total Runs
+                if (isPlayerBatting)
+                {
+                    playerTotalRuns = DataManager.Instance.GetPlayerTotalRuns() + playerTotalRunsInOneRound;
+                    DataManager.Instance.SetPlayerTotalRuns(playerTotalRuns);
+                }
+
                 isGameTimeOver = true;
             }
 
@@ -85,6 +112,19 @@ public class GameManager : MonoBehaviour
             CheckForTargetIsChase();
         }
     }
+
+    public void CheckForDailyRewardTImeIsStart()
+    {
+        if (DataManager.Instance.GetDailyRewardActiveTimeForBool() == 0)
+        {
+            isDailyRewardCollected = false;
+        }
+        else
+        {
+            isDailyRewardCollected = true;
+        }
+    }
+
 
     public void StartGame()
     {
@@ -105,6 +145,13 @@ public class GameManager : MonoBehaviour
             //all Out change ining
             Debug.Log("All Out");
             ChangeInning();
+
+            if (isPlayerBatting)
+            {
+                playerTotalRuns = DataManager.Instance.GetPlayerTotalRuns() + playerTotalRunsInOneRound;
+                DataManager.Instance.SetPlayerTotalRuns(playerTotalRuns);
+            }
+
             roundWicketCount = 0;
         }
     }
@@ -112,13 +159,14 @@ public class GameManager : MonoBehaviour
     //Check of target is Chased if chaseed by player 2 and set gameover
     public void CheckForTargetIsChase()
     {
-        if(aiTotalRuns > playerTotalRuns)
+        if(aiTotalRuns > playerTotalRunsInOneRound)
         {
             Destroy(ball);
             SwapPositions();
             isTargetChased = true;
             //ChangeInning();
             Debug.Log("Ai Wins");
+            DataManager.Instance.DecreaseTrophies(all_LevelLossingTrophies[currentLevelIndex]);
             winnerName = "Ai";
             isGamePlaying = false;
             player.gameObject.SetActive(false);
@@ -153,10 +201,18 @@ public class GameManager : MonoBehaviour
         //When Chaning inning check if target is not chased but time is over or all wickets 
         if(inningIndex == 2 && !isTargetChased)
         {
-            winnerName = "Player";
             isGamePlaying = false;
+            winnerName = "Player";
             player.gameObject.SetActive(false);
             aiPaddle.gameObject.SetActive(false);
+
+            //Give SLot
+            SlotsManager.Instance.GiveSlotIfEmpty();
+            UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
+
+            DataManager.Instance.IncreaseCoins(all_LevelWinningPrice[currentLevelIndex]);
+            DataManager.Instance.IncreaseTrophies(all_LevelWinningTrophies[currentLevelIndex]);
+
             UIManager.instance.ui_GameOver.gameObject.SetActive(true);
             UIManager.instance.ui_PlayScreen.gameObject.SetActive(false);
         }
@@ -241,8 +297,8 @@ public class GameManager : MonoBehaviour
         currentActiveGameTime = 0;
         inningIndex = 1;
         aiTotalRuns = 0;
-        playerTotalRuns = 0;
-        playerTotalWickets = 0;
+        playerTotalRunsInOneRound = 0;
+        playerTotalWicketsInOneRound = 0;
         aiTotalWickets = 0;
         roundRunsCount = 0;
         roundWicketCount = 0;
@@ -256,7 +312,7 @@ public class GameManager : MonoBehaviour
         roundWicketCount++;
         if (player.GetComponent<PlayerPaddleMovement>().isBatting)
         {
-            playerTotalWickets++;
+            playerTotalWicketsInOneRound++;
         }
         else
         {
@@ -276,7 +332,7 @@ public class GameManager : MonoBehaviour
         UIManager.instance.ui_PlayScreen.txt_Score.text = roundRunsCount.ToString();
         if (player.GetComponent<PlayerPaddleMovement>().isBatting)
         {
-            playerTotalRuns += runs;
+            playerTotalRunsInOneRound += runs;
         }
         else
         {
