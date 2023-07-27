@@ -7,9 +7,16 @@ public class DataManager : MonoBehaviour
     public static DataManager Instance;
 
 
-    public int gameCoins;
-    public int trophies;
+    public int totalCoins;
+    public int totalTrophies;
+    public int totalGems;
+    public int playerLevel;
+    public int playerXP;
+    public float requireXPForLevelup;
 
+    public float xpIncreasePR;
+
+    public int activePlayerIndex;
 
     public int dailyRewardTime;
 
@@ -18,7 +25,7 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;    
+        Instance = this;
     }
 
 
@@ -39,8 +46,25 @@ public class DataManager : MonoBehaviour
 
     private void Update()
     {
+
+        //this is temp code
+        if (Input.GetKeyDown(KeyCode.P))
+            IncreaseXPCount(10);
+
+
         if (Input.GetKeyDown(KeyCode.Tab))
             ClearPlayerPrefs();
+
+        //Onlyu FOr testing
+        if (Input.GetKeyDown(KeyCode.L))
+            IncreaseCoins(1000);
+
+        //Only For Testing
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS, 50);
+            GameManager.instance.playerTotalRuns = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS);
+        }
     }
 
 
@@ -48,21 +72,36 @@ public class DataManager : MonoBehaviour
     {
         Debug.Log("Set Player Data");
 
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, gameCoins);
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, trophies);
+        SetPlayerLevel(1); // Set Player level;
+        playerLevel = GetPlayerLevel();
+
+        SetPlayerCoins(totalCoins); //Set PLyaer coins
+        totalCoins = GetPlayerCoins();
+
+      //  PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, totalCoins);
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, totalTrophies);
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GEMS, totalGems);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS, 0);
+        SetPlayerXP(0);
+        playerXP = GetPlayerXP();
+
+        SetRequireXP(requireXPForLevelup);
+        requireXPForLevelup = GetRequireXP();
+        
+        SetActivePlayerIndex(0); // Set Active Player Index
+        activePlayerIndex = GetActivePlayerIndex();
 
         //Set Open Day For Daily Reward
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, 0);
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KET_DAYTIME, 50); // Day Time 24 Hours for Daily rewards
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KET_DAYTIME, 24 * 60 * 60); // Day Time 24 Hours for Daily rewards
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME, 0);
         TimeManager.Instance.timeForDailyRewards = GetDayTime();
         TimeManager.Instance.currentTime = GetDayTime();
 
         //Set Slot State Empty
-        for(int i =0; i < SlotsManager.Instance.allSlots.Length; i++)
+        for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
-             SetRewardSlotState(i, SlotState.Empty);
+            SetRewardSlotState(i, SlotState.Empty);
             PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, 0);
         }
 
@@ -81,8 +120,19 @@ public class DataManager : MonoBehaviour
     private void GetPlayerData()
     {
         //Get Player Data
-        gameCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
-        trophies = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_TROPHIES);
+       // totalCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
+        totalTrophies = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_TROPHIES);
+        totalGems = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GEMS);
+
+        totalCoins = GetPlayerCoins();
+
+        playerLevel = GetPlayerLevel();
+
+        requireXPForLevelup = GetRequireXP();
+
+        playerXP = GetPlayerXP();
+
+        activePlayerIndex = GetActivePlayerIndex();
 
         //Only For testing
         UIManager.instance.ui_UseableResouce.gameObject.SetActive(true);
@@ -100,6 +150,27 @@ public class DataManager : MonoBehaviour
         }
     }
 
+
+
+    public void IncreaseXPCount(int value)
+    {
+        playerXP += value;
+        SetPlayerXP(playerXP);
+        CheckForPlayerLevelUP();
+    }
+
+    public void CheckForPlayerLevelUP()
+    {
+        if(playerXP >= requireXPForLevelup)
+        {
+            UIManager.instance.LevelUpPopUpCalled();
+            playerLevel++;
+            SetPlayerLevel(playerLevel);
+            playerXP = 0;
+            requireXPForLevelup = requireXPForLevelup + (requireXPForLevelup * (xpIncreasePR / 100));
+            SetRequireXP(requireXPForLevelup);
+        }
+    }
 
 
     public float RewardSlotTimePlayerPrefs(int index)
@@ -120,34 +191,65 @@ public class DataManager : MonoBehaviour
     }
 
 
+    public bool IsEnoughCoinsForPurchase(int coinAmount)
+    {
+        if (totalCoins < coinAmount)
+            return false;
+        return true;
+    }
+
+    public bool IsEnoughGemssForPurchase(int gemsAmount)
+    {
+        if (totalGems < gemsAmount)
+            return false;
+        return true;
+    }
+
+
     #region PLAYER USEABLE RESOURCES
 
 
     public void IncreaseCoins(int _amount)
     {
-        gameCoins += _amount;
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, gameCoins);
-        UIManager.instance.ui_UseableResouce.SetCoinsUI();
+        totalCoins += _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, totalCoins);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.CoinAnimation());
     }
+
+
     public void DecreaseCoins(int _amount)
     {
-        gameCoins -= _amount;
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, gameCoins);
-        UIManager.instance.ui_UseableResouce.SetCoinsUI();
+        totalCoins -= _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, totalCoins);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.CoinAnimation());
+    }
+
+    public void IncreaseGems(int _amount)
+    {
+        totalGems += _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GEMS, totalGems);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.GemsAnimation());
+    }
+
+    public void DecreaseGems(int _amount)
+    {
+        totalGems -= _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GEMS, totalGems);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.GemsAnimation());
     }
 
     public void IncreaseTrophies(int _amount)
     {
-        trophies += _amount;
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, trophies);
-        UIManager.instance.ui_UseableResouce.SetTrophiesUI();
+        totalTrophies += _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, totalTrophies);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.TrophiesAnimation());
     }
 
     public void DecreaseTrophies(int _amount)
     {
-        trophies -= _amount;
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, trophies);
-        UIManager.instance.ui_UseableResouce.SetTrophiesUI();
+        totalTrophies -= _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, totalTrophies);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.TrophiesAnimation());
     }
 
     #endregion
@@ -160,6 +262,32 @@ public class DataManager : MonoBehaviour
 
     #region PLAYERPREFS SET DATA
 
+
+    public void SetRequireXP(float value)
+    {
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REQUIREXP, value);
+    }
+
+    public void SetPlayerLevel(int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_LEVEL, value);
+    }
+
+    public void SetPlayerCoins(int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, value);
+    }
+
+    public void SetPlayerXP(int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_XP, value);
+    }
+
+    public void SetActivePlayerIndex(int index)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACTIVE_PLAYER_INDEX, index);
+        activePlayerIndex = GetActivePlayerIndex();
+    }
 
     public void SetPlayerTotalRuns(int runs)
     {
@@ -187,9 +315,58 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME , i);
     }
 
+
+
+    public void SetAchivementCurrentValue(int index , int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index, value);
+    }
+
+    public void SetDayCount(int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, value);
+    }
+
+    public void SetGameQuitTime(string time)
+    {
+        PlayerPrefs.SetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME, time);
+    }
+
+    public void SetRewardSlotTime(int index, float time)
+    {
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index , time);
+    }
+
     #endregion
 
     #region PLAYERPREFS GET DATA
+
+
+    public float GetRequireXP()
+    {
+        return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REQUIREXP);
+    }
+
+    public int GetPlayerLevel()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_PLAYER_LEVEL);
+    }
+
+    public int GetPlayerCoins()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
+    }
+
+    public int GetPlayerXP()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_PLAYER_XP);
+    }
+
+
+    public int GetActivePlayerIndex()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACTIVE_PLAYER_INDEX);
+    }
 
 
     public int GetPlayerTotalRuns()
@@ -222,5 +399,26 @@ public class DataManager : MonoBehaviour
     {
         return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + _index);
     }
+
+    public int GetAchivementCurrentValue(int index)
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index);
+    }
+
+    public int GetDayCount()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAYS_COUNT);
+    }
+
+    public string GetQuitTime()
+    {
+        return PlayerPrefs.GetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME);
+    }
+
+    public float GetRewardSlotTime(int index)
+    {
+        return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index);
+    }
+
     #endregion
 }

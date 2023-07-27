@@ -29,7 +29,8 @@ public class SlotsManager : MonoBehaviour
         {
             if (allSlots[i].slotState == SlotState.Empty)
             {
-                DataManager.Instance.SetSlotUnlockTimer(i, allSlots[i].timer);
+                DataManager.Instance.SetSlotUnlockTimer(i, allSlots[GameManager.instance.currentLevelIndex].timer);
+                Debug.Log("Slot TImer : " + allSlots[GameManager.instance.currentLevelIndex].timer);
                 TimeManager.Instance.SetSlotTimeData(i, DataManager.Instance.GetSlotUnlockTime(i));
                 DataManager.Instance.SetRewardSlotState(i, SlotState.HasReward);
                 UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();

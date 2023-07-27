@@ -13,6 +13,9 @@ public class RewardSlotsUI : MonoBehaviour
     [SerializeField] private Sprite sprite_TimeStart;
     [SerializeField] private Sprite sprite_RewardGenrated;
 
+    private bool IsBagTimerRunning = false;
+    private int bagIndex = 0;
+
     private void Start()
     {
         SetSlotsDataWhenChangeState();
@@ -27,13 +30,18 @@ public class RewardSlotsUI : MonoBehaviour
         }
 
         //Time Calculation
-        for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
+        //for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
+        //{
+        //    if (SlotsManager.Instance.allSlots[i].slotState == SlotState.TimerStart)
+        //    {
+        //        all_RewardSlots[i].SetSlotTime(TimeManager.Instance.currentSlotTime[i]);
+        //       // all_RewardSlots[i].img_BG.sprite = sprite_TimeStart;
+        //    }
+        //}
+
+        if (IsBagTimerRunning)
         {
-            if (SlotsManager.Instance.allSlots[i].slotState == SlotState.TimerStart)
-            {
-                all_RewardSlots[i].SetSlotTime(TimeManager.Instance.currentSlotTime[i]);
-                all_RewardSlots[i].img_BG.sprite = sprite_TimeStart;
-            }
+            all_RewardSlots[bagIndex].SetSlotTime(TimeManager.Instance.currentSlotTime[bagIndex]);
         }
     }
 
@@ -53,11 +61,14 @@ public class RewardSlotsUI : MonoBehaviour
             {
                 all_RewardSlots[i].ShowAllObjects();
                 all_RewardSlots[i].img_BG.sprite = sprite_HasReward;
-                all_RewardSlots[i].txt_SlotTimer.text = SlotsManager.Instance.allSlots[i].timer.ToString();
+                all_RewardSlots[i].img_SlotIcon.sprite = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].icon;
+                all_RewardSlots[i].txt_SlotName.text = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].name;
+                all_RewardSlots[i].txt_SlotTimer.text = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].timer.ToString();
             }else if (SlotsManager.Instance.allSlots[i].slotState == SlotState.TimerStart)
             {
                 SlotsManager.Instance.isAnotherSlotHasActiveTime = true;
                 all_RewardSlots[i].SetSlotTime(TimeManager.Instance.currentSlotTime[i]);
+                all_RewardSlots[i].txt_SlotName.text = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].name;
                 all_RewardSlots[i].img_BG.sprite = sprite_TimeStart;
             }else if (SlotsManager.Instance.allSlots[i].slotState == SlotState.RewardGenrated)
             {
@@ -90,7 +101,7 @@ public class RewardSlotsUI : MonoBehaviour
         {
             Sprite rewardSprite = all_RewardSlots[index].img_SlotIcon.sprite;
             string name = all_RewardSlots[index].txt_SlotName.text;
-            int numberOFRewards = SlotsManager.Instance.allSlots[index].numberOfRewards;
+            int numberOFRewards = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].numberOfRewards;
             int requireAmountForUnlock = SlotsManager.Instance.allSlots[index].requireAmountForUnlock;
             float unlockTime = TimeManager.Instance.currentSlotTime[index];
 

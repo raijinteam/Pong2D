@@ -152,9 +152,12 @@ namespace UnityEngine.UI.Extensions.CasualGame
 
             if (!isInitialised && !pSystem.main.playOnAwake)
             {
-                pSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                //pSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                pSystem.Stop();
                 isInitialised = true;
             }
+
+            //pSystem.Play();
 
             Vector2 temp = Vector2.zero;
             Vector2 corner1 = Vector2.zero;
@@ -351,6 +354,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     Initialize();
                 }
             }
+         
         }
 
         private void LateUpdate()
@@ -370,6 +374,12 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     {
                         pSystem = null;
                         Initialize();
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.O))
+                    {
+                        Debug.Log("Here");
+                        pSystem.Play();
                     }
                 }
             }

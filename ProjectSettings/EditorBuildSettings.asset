@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Samples/Player Accounts/1.0.0-pre.2/UI Example/FacebookLoginUIExample.unity
+    guid: 67dcfcf07c76ea54ca5323cb755e87a6
   m_configObjects: {}

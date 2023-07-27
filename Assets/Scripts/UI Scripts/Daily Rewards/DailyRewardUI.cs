@@ -42,7 +42,6 @@ public class DailyRewardUI : MonoBehaviour
             allDaysRewardButtons[i].img_ClimedReward.gameObject.SetActive(true);
         }
 
-       // allDaysRewardButtons[index].GetComponent<Button>().interactable = true;
 
     }
 
@@ -109,7 +108,8 @@ public class DailyRewardUI : MonoBehaviour
 
 
                 index++;
-                PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, index);
+                DataManager.Instance.SetDayCount(index);
+                //PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, index);
                 //allDaysRewardButtons[index].GetComponent<Button>().interactable = true;
             }
 

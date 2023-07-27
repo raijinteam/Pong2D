@@ -79,8 +79,6 @@ public class BallMovement : MonoBehaviour
 
         if (isSwing) {
 
-
-
             swingDir = ball_Rb.velocity.x + fltSwingForce * Time.deltaTime;
             ball_Rb.velocity = new Vector2(swingDir, ball_Rb.velocity.y);
         }

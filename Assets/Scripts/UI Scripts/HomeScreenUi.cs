@@ -11,10 +11,6 @@ public class HomeScreenUi : MonoBehaviour
     public Image img_RedDot;
 
 
-    private void OnEnable()
-    {
-
-    }
 
     public void OnClick_StartGame()
     {
@@ -30,5 +26,10 @@ public class HomeScreenUi : MonoBehaviour
     public void OnClick_OpenAchivements()
     {
         UIManager.instance.ui_Achievement.gameObject.SetActive(true);
+    }
+
+    public void OnClick_OpenDailySpin()
+    {
+        UIManager.instance.ui_DailySpin.gameObject.SetActive(true);
     }
 }

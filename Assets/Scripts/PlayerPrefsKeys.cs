@@ -7,6 +7,12 @@ public class PlayerPrefsKeys
     //Game Data
     public static string KEY_GAMECOINS = "Coins";
     public static string KEY_TROPHIES = "Trophies";
+    public static string KEY_GEMS = "Gems";
+    public static string KEY_PLAYER_XP = "PlayerXP";
+    public static string KEY_PLAYER_LEVEL = "PlayerLevel";
+    public static string KEY_REQUIREXP = "RequireXP";
+
+    public static string KEY_ACTIVE_PLAYER_INDEX = "ActivePlayerIndex";
 
     public static string KEY_PLAYER_TOTAL_RUNS = "PlayerTotalRuns";
 

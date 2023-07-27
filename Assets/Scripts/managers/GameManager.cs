@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [Header("Required Components")]
     public Transform pf_Ball;
     public AiPaddle aiPaddle;
-    public PlayerData player;
+    public Player player;
 
 
     [Header("All Levels Data")]
@@ -288,12 +288,12 @@ public class GameManager : MonoBehaviour
         UIManager.instance.ui_PlayScreen.txt_Wickets.text = roundWicketCount.ToString();
     }
 
-    public void ResetScoreWHenGameover()
+    public void Gameover()
     {
-        isGamePlaying = true;
+        isGamePlaying = false;
         isTargetChased = false;
-        player.gameObject.SetActive(true);
-        aiPaddle.gameObject.SetActive(true);
+        player.gameObject.SetActive(false);
+        aiPaddle.gameObject.SetActive(false);
         currentActiveGameTime = 0;
         inningIndex = 1;
         aiTotalRuns = 0;
@@ -304,7 +304,6 @@ public class GameManager : MonoBehaviour
         roundWicketCount = 0;
         UIManager.instance.ui_PlayScreen.txt_Score.text = roundRunsCount.ToString();
         UIManager.instance.ui_PlayScreen.txt_Wickets.text = roundWicketCount.ToString();
-        SpawnNewBall();
     }
 
     public void IncreaseWicket()

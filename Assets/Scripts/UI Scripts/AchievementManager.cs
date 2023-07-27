@@ -53,7 +53,7 @@ public class AchievementManager : MonoBehaviour
 
             if (achievementData.isDailyMissionComplate)
             {
-                Debug.Log("In if COndidison");
+                //Debug.Log("In if COndidison");
                 achievementData.btn_Claim.gameObject.SetActive(true);
                 UIManager.instance.ui_HomePanel.ui_HomeScreen.img_RedDot.gameObject.SetActive(true);
             }
@@ -79,7 +79,7 @@ public class AchievementManager : MonoBehaviour
 
         if (DataManager.Instance.GetArchivmentRewardState(index) == 0)
         {
-            Debug.Log("First False");
+           // Debug.Log("First False");
 
             list_ActiveAchivementData[index].isDailyMissionComplate = false;
             list_ActiveAchivementData[index].btn_Claim.gameObject.SetActive(false);

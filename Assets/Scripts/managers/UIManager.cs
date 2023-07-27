@@ -24,4 +24,20 @@ public class UIManager : MonoBehaviour
     public RewardSlotsUI ui_RewardSlot;
     public SlotTimerUI ui_SlotTimer;
     public UseableResourcesBarUI ui_UseableResouce;
+    public SelectedPlayerInfoUI ui_SelectedPlayerInfo;
+    public NavigationUI ui_Navigation;
+    public ShopUI ui_Shop;
+    public PlayerSelectUI ui_PlayerSelect;
+    public PlayerProfileUI ui_PlayerProfile;
+    public FortuneWheelSpinUI ui_DailySpin;
+
+    public GameObject pf_LevelUpPopUp;
+    public RectTransform popUpSpwanPosition;
+
+
+
+    public void LevelUpPopUpCalled()
+    {
+        Instantiate(pf_LevelUpPopUp, popUpSpwanPosition.position, Quaternion.identity , popUpSpwanPosition);
+    }
 }

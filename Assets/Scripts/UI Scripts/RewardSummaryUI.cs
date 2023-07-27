@@ -38,5 +38,7 @@ public class RewardSummaryUI : MonoBehaviour
             allRewardIcons[i].gameObject.SetActive(false);
         }
         this.gameObject.SetActive(false);
+
+
     }
 }
