@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public class DailyRewardUI : MonoBehaviour
 {
@@ -30,6 +31,9 @@ public class DailyRewardUI : MonoBehaviour
 
         index = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAYS_COUNT);
 
+        SetActiveDailyReward();
+
+
         for (int i = 0; i < allDaysRewardButtons.Length; i++)
         {
             allDaysRewardButtons[i].GetComponent<Button>().interactable = false;
@@ -37,7 +41,7 @@ public class DailyRewardUI : MonoBehaviour
         }
 
         //Set Clamied Reward
-        for(int i = 0; i < index; i++)
+        for (int i = 0; i < index; i++)
         {
             allDaysRewardButtons[i].img_ClimedReward.gameObject.SetActive(true);
         }
@@ -48,9 +52,9 @@ public class DailyRewardUI : MonoBehaviour
 
     private void Update()
     {
-        if(DataManager.Instance.GetDailyRewardActiveTimeForBool() == 1)
+        if (DataManager.Instance.GetDailyRewardActiveTimeForBool() == 1)
         {
-            int timeInSeconds = (int)TimeManager.Instance.currentTime;
+            int timeInSeconds = (int)TimeManager.Instance.currentDailyRewardTime;
 
             float hours = timeInSeconds / 3600;
             float minutes = (timeInSeconds % 3600) / 60;
@@ -64,7 +68,25 @@ public class DailyRewardUI : MonoBehaviour
         {
             if (DataManager.Instance.GetDailyRewardActiveTimeForBool() == 0)
             {
+                SetActiveDailyReward();
                 allDaysRewardButtons[index].GetComponent<Button>().interactable = true;
+            }
+        }
+    }
+
+
+    public void SetActiveDailyReward()
+    {
+        for (int i = 0; i < allDaysRewardButtons.Length; i++)
+        {
+            if (i == index)
+            {
+                allDaysRewardButtons[i].activeReward.gameObject.SetActive(true);
+                allDaysRewardButtons[i].activeRewardHeader.DOAnchorPos(new Vector2(0, 20), 0.5f).SetLoops(-1, LoopType.Yoyo);
+            }
+            else
+            {
+                allDaysRewardButtons[i].activeReward.gameObject.SetActive(false);
             }
         }
     }
@@ -79,7 +101,7 @@ public class DailyRewardUI : MonoBehaviour
             Debug.Log("Set Reward Time");
             allDaysRewardButtons[index].GetComponent<Button>().interactable = false;
             allDaysRewardButtons[index].img_ClimedReward.gameObject.SetActive(true);
-
+            allDaysRewardButtons[index].activeReward.gameObject.SetActive(false);
 
             if (index == allDaysRewardButtons.Length - 1)
             {
@@ -108,7 +130,9 @@ public class DailyRewardUI : MonoBehaviour
 
 
                 index++;
-                DataManager.Instance.SetDayCount(index);
+
+                allDaysRewardButtons[index].activeReward.gameObject.SetActive(false);
+
                 //PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, index);
                 //allDaysRewardButtons[index].GetComponent<Button>().interactable = true;
             }

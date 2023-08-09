@@ -8,9 +8,25 @@ public class HomeScreenUi : MonoBehaviour
 {
 
 
-    public Image img_RedDot;
+    public Image img_DailyMissionsRedDot;
+    public Image img_SpinWheelRadDot;
+
+    private void OnEnable()
+    {
+        SetWheelRedDot();
+    }
 
 
+    public void SetWheelRedDot()
+    {
+        if (DataManager.Instance.totalSkipIt > 0)
+        {
+            img_SpinWheelRadDot.gameObject.SetActive(true);
+        }
+        else{
+            img_SpinWheelRadDot.gameObject.SetActive(false);
+        }
+    }
 
     public void OnClick_StartGame()
     {
@@ -30,6 +46,7 @@ public class HomeScreenUi : MonoBehaviour
 
     public void OnClick_OpenDailySpin()
     {
+        Debug.Log("Open Dailyt SPin");
         UIManager.instance.ui_DailySpin.gameObject.SetActive(true);
     }
 }

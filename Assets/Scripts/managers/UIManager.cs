@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
     {
         instance = this;
     }
-
+    [Header("All Scripts")]
     public GameObject allMenus;
     public HomePanelUI ui_HomePanel;
     public PlauerMatchMakerUI ui_MatchMaker;
@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
     public PlayerScreenUI ui_PlayScreen;
     public TimerScreenUI ui_TimeScreen;
     public RewardSummaryUI ui_RewardSummary;
-    public AchivementUI ui_Achievement;
+    public DailyMissionUI ui_Achievement;
     public DailyRewardUI ui_DailyReward;
     public RewardSlotsUI ui_RewardSlot;
     public SlotTimerUI ui_SlotTimer;
@@ -30,11 +30,21 @@ public class UIManager : MonoBehaviour
     public PlayerSelectUI ui_PlayerSelect;
     public PlayerProfileUI ui_PlayerProfile;
     public FortuneWheelSpinUI ui_DailySpin;
+    public RewardScreenUI ui_Reward;
+    public MiniGamePlayUI ui_MiniGamePlay;
 
+
+    [Header("Required Components")]
     public GameObject pf_LevelUpPopUp;
     public RectTransform popUpSpwanPosition;
+    public RectTransform cardAnimationPosition;
 
-
+    private void Update()
+    {
+        //Only for dubug
+        if (Input.GetKeyDown(KeyCode.S))
+            ui_Reward.gameObject.SetActive(true);
+    }
 
     public void LevelUpPopUpCalled()
     {

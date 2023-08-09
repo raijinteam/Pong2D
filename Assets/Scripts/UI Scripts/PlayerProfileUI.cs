@@ -8,31 +8,26 @@ public class PlayerProfileUI : MonoBehaviour
 {
 
 
-    [SerializeField] private Image img_PaddleIcon;
+    [SerializeField] private Image img_PlayerProfile;
     [SerializeField] private TextMeshProUGUI txt_PlayerLevel;
-    [SerializeField] private Slider slider_PlayerXP;
-    [SerializeField] private TextMeshProUGUI txt_CurrentXP;
-    [SerializeField] private TextMeshProUGUI txt_RequiredXP;
+    [SerializeField] private TMP_InputField input_PlayerName;
 
 
+    [SerializeField] private string name;
 
     private void OnEnable()
     {
         int currentActivePlauer = DataManager.Instance.activePlayerIndex;
 
-        img_PaddleIcon.sprite = PlayerManager.Instance.all_Players[currentActivePlauer].image;
-        txt_PlayerLevel.text = DataManager.Instance.playerLevel.ToString();
-        txt_CurrentXP.text = DataManager.Instance.playerXP.ToString();
-
-        int requireXP = (int)DataManager.Instance.requireXPForLevelup;
-
-        txt_RequiredXP.text = requireXP.ToString();
-
-        slider_PlayerXP.maxValue = requireXP;
-
-        slider_PlayerXP.value = DataManager.Instance.playerXP;
+        img_PlayerProfile.sprite = PlayerManager.Instance.all_Players[currentActivePlauer].image;
+       // txt_PlayerLevel.text = DataManager.Instance.playerLevel.ToString();
     }
 
+    public void OnClick_SaveName()
+    {
+        name = input_PlayerName.text;
+        DataManager.Instance.SetPlayerName(name);
+    }
 
     public void OnClick_Close()
     {

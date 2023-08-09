@@ -36,8 +36,8 @@ public class TransactionEffectManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-            SpawnCoinsParticalEffect(0);
+        if (Input.GetKeyDown(KeyCode.S)) { }
+            //SpawnCoinsParticalEffect(0);
     }
 
 
@@ -59,7 +59,7 @@ public class TransactionEffectManager : MonoBehaviour
         coinAmount = particalCount;*/
         Debug.Log("Play");
 
-        pf_CoinPS.GetComponent<ParticleSystem>().Play();
+       // pf_CoinPS.GetComponent<ParticleSystem>().Play();
         Debug.Log("Is playing : " + pf_CoinPS.GetComponent<ParticleSystem>().isPlaying);
        // StartCoroutine(MoveTorwadsParent());
     }

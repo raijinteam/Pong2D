@@ -13,6 +13,8 @@ public class FortuneWheelSpinUI : MonoBehaviour
     [SerializeField] private RectTransform wheelTransform;
     [SerializeField] private Button btn_Spin;
     [SerializeField] private Transform pivotPoint;
+    [SerializeField] private RectTransform skipItContainer;
+    [SerializeField] private Image img_AdIcon;
     [SerializeField] private Image[] all_RewardsIcons;
     [SerializeField] private int[] all_RewardAmount;
     [SerializeField] private TextMeshProUGUI[] all_RewardText;
@@ -20,6 +22,7 @@ public class FortuneWheelSpinUI : MonoBehaviour
 
 
     [Header("Properites")]
+    [SerializeField] private int skipitAmountForSpin;
     [SerializeField] private float stopPoint;
     [SerializeField] private bool isSpinning;
     [SerializeField] private int[] all_SegmentProbalities;
@@ -35,6 +38,18 @@ public class FortuneWheelSpinUI : MonoBehaviour
         for(int i = 0; i < segments; i++)
         {
             all_RewardText[i].text = "x"+ all_RewardAmount[i].ToString();
+        }
+
+
+        if (DataManager.Instance.IsEnoughSkipItForUse())
+        {
+            skipItContainer.gameObject.SetActive(true);
+            img_AdIcon.gameObject.SetActive(false);
+        }
+        else
+        {
+            skipItContainer.gameObject.SetActive(false);
+            img_AdIcon.gameObject.SetActive(true);
         }
     }
 
@@ -67,7 +82,7 @@ public class FortuneWheelSpinUI : MonoBehaviour
         landedSegment = Mathf.RoundToInt(currentRotation / segmentSize);
 
         Debug.Log(" after Landed on segment: " + landedSegment);
-        all_RewardsIcons[(int)landedSegment].transform.DOScale(1.2f, 0.5f).SetEase(Ease.InOutBounce).SetLoops(5).OnComplete(SetRewardScreen);
+        all_RewardsIcons[(int)landedSegment].transform.DOScale(2f, 0.5f).SetEase(Ease.InOutBounce).SetLoops(5).OnComplete(SetRewardScreen);
 
 
         
@@ -79,14 +94,35 @@ public class FortuneWheelSpinUI : MonoBehaviour
         this.gameObject.SetActive(false);
         UIManager.instance.ui_RewardSummary.SetRewardSummaryData(all_RewardsIcons[(int)landedSegment].sprite, all_RewardText[(int)landedSegment].text);
         UIManager.instance.ui_RewardSummary.gameObject.SetActive(true);
-        all_RewardsIcons[(int)landedSegment].transform.DOScale(1f, 0.5f);
+        all_RewardsIcons[(int)landedSegment].transform.DOScale(1.7f, 0.5f);
         isSpinning = false;
     }
 
 
     public void OnClick_SpinWheel()
     {
-        //SpinWheel();
+
+        if (DataManager.Instance.IsEnoughSkipItForUse())
+        {
+            DataManager.Instance.DecreaseSkipIt(skipitAmountForSpin);
+        }
+        else
+        {
+            //show a video
+        }
+
+        //Set As Data
+        if (DataManager.Instance.IsEnoughSkipItForUse())
+        {
+            skipItContainer.gameObject.SetActive(true);
+            img_AdIcon.gameObject.SetActive(false);
+        }
+        else
+        {
+            skipItContainer.gameObject.SetActive(false);
+            img_AdIcon.gameObject.SetActive(true);
+        }
+
         StartCoroutine(SpinWheelCO());
     }
 }

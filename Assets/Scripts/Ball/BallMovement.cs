@@ -137,10 +137,10 @@ public class BallMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag(bounceWalls))
         {
-            Debug.Log("Before" + dirction.right);
+           // Debug.Log("Before" + dirction.right);
             dir = Vector3.Reflect(dirction.right, collision.contacts[0].normal);
             dirction.right = dir;
-            Debug.Log("After" + dirction.right);
+            //Debug.Log("After" + dirction.right);
             ball_Rb.velocity = Vector2.zero;
             ball_Rb.angularVelocity = 0;
 

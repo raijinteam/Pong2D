@@ -5,9 +5,12 @@ using UnityEngine;
 public class PlayerPrefsKeys
 {
     //Game Data
+    public static string KEY_PLAYER_NAME = "PlayerName";
+    public static string KEY_PLAYER_PROFILE_INDEX = "PlayerProfileIndex";
     public static string KEY_GAMECOINS = "Coins";
     public static string KEY_TROPHIES = "Trophies";
     public static string KEY_GEMS = "Gems";
+    public static string KEY_SKIPIT = "SkipIt";
     public static string KEY_PLAYER_XP = "PlayerXP";
     public static string KEY_PLAYER_LEVEL = "PlayerLevel";
     public static string KEY_REQUIREXP = "RequireXP";
@@ -19,7 +22,9 @@ public class PlayerPrefsKeys
     public static string KEY_GAME_QUIT_TIME = "GameQuitTime";
 
 
-    //Achievement CUrrent value
+    //Daily Mission CUrrent value
+    public static string KEY_DAILY_MISSION_TIME = "DailyMissionTime";
+    public static string KEY_DAILY_MISSION_REWARD_CLAIMED = "DailyMissionRewardClaimed";
     public static string KEY_ACHIEVEMENT_CURRENT_VALUE = "AchievementCurrentValue";
     public static string KEY_ACHIEVEMENT_REWARD_COLLECTED = "AchievementRewardCollected";
 

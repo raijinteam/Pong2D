@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            AchievementManager.Instance.IncreaseAchievementCurrentValue(1, 10);
+            UIManager.instance.ui_Achievement.increasemissinValue(1, 5);
         }
 
 

@@ -19,7 +19,17 @@ public class PlayerManager : MonoBehaviour
 
     public PlayerData[] all_Players;
 
+    public int maxPlayerLevel;
 
+
+    public bool IsPlayerReachMaxLevel(int index)
+    {
+        if(all_Players[index].currentLevel >= maxPlayerLevel)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public bool IsEnoughCardsForUpgradePlayer(int index)
     {

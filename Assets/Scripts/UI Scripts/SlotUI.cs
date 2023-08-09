@@ -6,30 +6,52 @@ using TMPro;
 
 public class SlotUI : MonoBehaviour
 {
-    public TextMeshProUGUI txt_EmptyBag;
-    public Image img_BG;
-    public Image img_SlotIcon;
-    public TextMeshProUGUI txt_SlotName;
-    public TextMeshProUGUI txt_SlotTimer;
-    public Image img_Timer;
+    public RectTransform img_SlotClick;
+    public TextMeshProUGUI txt_FilledSlotTimer;
+    public TextMeshProUGUI txt_RunningSlotTimer;
+    public GameObject img_EmptySlot;
+    public GameObject img_slotFilled;
+    public GameObject img_SlotRunning;
+    public GameObject img_SlotFinish;
 
 
     public void EmptySlot()
     {
-        txt_EmptyBag.gameObject.SetActive(true);
-        img_SlotIcon.gameObject.SetActive(false);
-        txt_SlotTimer.gameObject.SetActive(false);
-        txt_SlotName.gameObject.SetActive(false);
-        img_Timer.gameObject.SetActive(false);
+        img_EmptySlot.gameObject.SetActive(true);
+        img_slotFilled.gameObject.SetActive(false);
+        img_SlotRunning.gameObject.SetActive(false);
+        img_SlotFinish.gameObject.SetActive(false);
+    }
+
+
+    public void SetSlotFilled()
+    {
+        img_EmptySlot.gameObject.SetActive(false);
+        img_slotFilled.gameObject.SetActive(true);
+        img_SlotRunning.gameObject.SetActive(false);
+        img_SlotFinish.gameObject.SetActive(false);
+    }
+
+    public void SetSlotRunning()
+    {
+        img_EmptySlot.gameObject.SetActive(false);
+        img_slotFilled.gameObject.SetActive(false);
+        img_SlotRunning.gameObject.SetActive(true);
+        img_SlotFinish.gameObject.SetActive(false);
+    }
+
+    public void SetSlotFinished()
+    {
+        img_EmptySlot.gameObject.SetActive(false);
+        img_slotFilled.gameObject.SetActive(false);
+        img_SlotRunning.gameObject.SetActive(false);
+        img_SlotFinish.gameObject.SetActive(true);
     }
 
     public void ShowAllObjects()
     {
-        txt_EmptyBag.gameObject.SetActive(false);
-        img_SlotIcon.gameObject.SetActive(true);
-        txt_SlotTimer.gameObject.SetActive(true);
-        txt_SlotName.gameObject.SetActive(true);
-        img_Timer.gameObject.SetActive(true);
+        txt_FilledSlotTimer.gameObject.SetActive(true);
+        txt_RunningSlotTimer.gameObject.SetActive(true);
     }
 
     public void SetSlotTime(float _time)
@@ -39,13 +61,12 @@ public class SlotUI : MonoBehaviour
         float seconds = _time % 60;
 
 
-        txt_SlotTimer.text = $"{(int)hours} : {(int)minutes} : {(int)seconds}";
+        txt_RunningSlotTimer.text = $"{(int)hours}h {(int)minutes}m {(int)seconds}s";
     }
 
     public void SetAllSlotData(Sprite _bagSprite, string _slotName, int _time)
     {
-        img_SlotIcon.sprite = _bagSprite;
-        txt_SlotName.text = _slotName;
-        txt_SlotTimer.text = _time.ToString();
+        txt_FilledSlotTimer.text = _time.ToString();
+        txt_RunningSlotTimer.text = _time.ToString();
     }
 }

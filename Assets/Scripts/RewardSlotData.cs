@@ -23,4 +23,7 @@ public class RewardSlotData : MonoBehaviour
     public float timer;
     public int requireAmountForUnlock;
     public int numberOfRewards;
+    public int coinReward;
+    public int gemsReward;
+    public int skipItUpReward;
 }

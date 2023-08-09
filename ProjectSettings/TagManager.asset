@@ -20,6 +20,7 @@ TagManager:
   - exit
   - enemy
   - powerup
+  - MiniGameBall
   layers:
   - Default
   - TransparentFX

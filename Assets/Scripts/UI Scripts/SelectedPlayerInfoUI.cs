@@ -8,7 +8,7 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 {
     public int index;
 
-    private float moveSpeed;
+    private float ultimateCount;
     private float batForce;
     private float ballForce;
     private float swingForce;
@@ -17,21 +17,27 @@ public class SelectedPlayerInfoUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_PlayerName;
     [SerializeField] private Image img_PlayerIcon;
     [SerializeField] private TextMeshProUGUI txt_PlayerLevel;
+    [SerializeField] private Image img_LevelUpIndicator;
 
-    [SerializeField] private TextMeshProUGUI txt_Currentspeed;
-    [SerializeField] private TextMeshProUGUI txt_Updatespeed;
-
+    [Header("Bat Force")]
     [SerializeField] private TextMeshProUGUI txt_CurrentBatForce;
-    [SerializeField] private TextMeshProUGUI txt_UpdateBatForce;
-
+    [SerializeField] private TextMeshProUGUI txt_NewBatForce;
+    [Header("ball Force")]
     [SerializeField] private TextMeshProUGUI txt_CurrentBallForce;
-    [SerializeField] private TextMeshProUGUI txt_UpdateBallForce;
-
+    [SerializeField] private TextMeshProUGUI txt_NewBowlingForce;
+    [Header("Bowing Swing")]
     [SerializeField] private TextMeshProUGUI txt_CurrentSwing;
-    [SerializeField] private TextMeshProUGUI txt_UpdateSwing;
+    [SerializeField] private TextMeshProUGUI txt_NewBowingSwing;
+    [Header("Ultimatem Count")]
+    [SerializeField] private TextMeshProUGUI txt_CurrentUltimatime;
+    [SerializeField] private TextMeshProUGUI txt_NewUltimatime;
+
 
     [SerializeField] private Slider slider_Cards;
     [SerializeField] private Image img_FillSlider;
+    [SerializeField] private Sprite sprite_BlueFill;
+    [SerializeField] private Sprite sprite_GreenFill;
+
 
     [SerializeField] private TextMeshProUGUI txt_CurrentCards;
     [SerializeField] private TextMeshProUGUI txt_RequireCards;
@@ -48,13 +54,12 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
         btn_Select.gameObject.SetActive(true);
         btn_Upgrade.gameObject.SetActive(true);
+        img_LevelUpIndicator.gameObject.SetActive(false);
 
-        txt_Updatespeed.gameObject.SetActive(false);
-        txt_UpdateBatForce.gameObject.SetActive(false);
-        txt_UpdateBallForce.gameObject.SetActive(false);
-        txt_UpdateSwing.gameObject.SetActive(false);
 
-        img_FillSlider.color = Color.blue;
+        SetPlayerUpdateData(index);
+
+        img_FillSlider.sprite = sprite_GreenFill;
 
         if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.NoCards)
         {
@@ -62,11 +67,8 @@ public class SelectedPlayerInfoUI : MonoBehaviour
             btn_Upgrade.gameObject.SetActive(false);
         } else if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.EnoughCardsForUpgrade)
         {
-            img_FillSlider.color = Color.yellow;
-            txt_Updatespeed.gameObject.SetActive(true);
-        txt_UpdateBallForce.gameObject.SetActive(true);
-            txt_UpdateBatForce.gameObject.SetActive(true);
-            txt_UpdateSwing.gameObject.SetActive(true);
+            img_FillSlider.sprite = sprite_BlueFill;
+            SetPlayerUpdateData(index);
         }
 
         int currentPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel;
@@ -93,15 +95,60 @@ public class SelectedPlayerInfoUI : MonoBehaviour
     }
 
 
+    private void SetPlayerUpdateData(int index)
+    {
+        int currentLevel = PlayerManager.Instance.all_Players[index].currentLevel;
+        txt_NewUltimatime.gameObject.SetActive(false);
+        txt_NewBatForce.gameObject.SetActive(false);
+        txt_NewBowlingForce.gameObject.SetActive(false);
+        txt_NewBowingSwing.gameObject.SetActive(false);
+
+        float newBatForce = PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel];
+
+        float newBowlingForce = PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel];
+
+        float newBowlingSwing = PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel];
+
+        float newultimateCount = PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel + 1] - PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel];
+
+
+        if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.EnoughCardsForUpgrade)
+        {
+            if(PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel + 1])
+            {
+                txt_NewBatForce.gameObject.SetActive(true);
+                txt_NewBatForce.text = "+" + newBatForce; 
+            }
+            if (PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel + 1])
+            {
+                txt_NewBowlingForce.gameObject.SetActive(true);
+                txt_NewBowlingForce.text = "+" + newBowlingForce;
+            }
+            if (PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel + 1])
+            {
+                txt_NewBowingSwing.gameObject.SetActive(true);
+                txt_NewBowingSwing.text = "+" + newBowlingSwing;
+            }
+            if (PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel] != PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel + 1])
+            {
+                txt_NewUltimatime.gameObject.SetActive(true);
+                txt_NewUltimatime.text = "+" + newultimateCount;
+            }
+        }
+
+
+    }
+
+
     private void SetPlayerPropertiesData()
     {
         int currentLevel = PlayerManager.Instance.all_Players[index].currentLevel;
-        moveSpeed = PlayerManager.Instance.all_Players[index].moveSpeed[currentLevel];
+        ultimateCount = PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel];
         batForce = PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel];
         ballForce = PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel];
         swingForce = PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel];
 
-        txt_Currentspeed.text = moveSpeed.ToString();
+        txt_CurrentUltimatime.text = ultimateCount.ToString();
         txt_CurrentBatForce.text = batForce.ToString();
         txt_CurrentBallForce.text = ballForce.ToString();
         txt_CurrentSwing.text = swingForce.ToString();
@@ -113,26 +160,27 @@ public class SelectedPlayerInfoUI : MonoBehaviour
         float currentTime = 0;
         while(currentTime < 1)
         {
+
+            int currentPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel ;
             currentTime += Time.deltaTime / 1;
-            moveSpeed = Mathf.Lerp(moveSpeed, PlayerManager.Instance.all_Players[index].moveSpeed[PlayerManager.Instance.all_Players[index].currentLevel] , currentTime);
+            ultimateCount = Mathf.Lerp(ultimateCount, PlayerManager.Instance.all_Players[index].ultimateCount[currentPlayerLevel], currentTime);
 
+            batForce = Mathf.Lerp(batForce, PlayerManager.Instance.all_Players[index].maxBatForce[currentPlayerLevel], currentTime);
 
-            batForce = Mathf.Lerp(batForce, PlayerManager.Instance.all_Players[index].maxBatForce[PlayerManager.Instance.all_Players[index].currentLevel], currentTime);
+            ballForce = Mathf.Lerp(ballForce, PlayerManager.Instance.all_Players[index].maxBallForce[currentPlayerLevel], currentTime);
 
-            ballForce = Mathf.Lerp(ballForce, PlayerManager.Instance.all_Players[index].maxBallForce[PlayerManager.Instance.all_Players[index].currentLevel], currentTime);
+            swingForce = Mathf.Lerp(swingForce, PlayerManager.Instance.all_Players[index].maxSwingForce[currentPlayerLevel], currentTime);
 
-            swingForce = Mathf.Lerp(swingForce, PlayerManager.Instance.all_Players[index].maxSwingForce[PlayerManager.Instance.all_Players[index].currentLevel], currentTime);
-
-            txt_Currentspeed.text = moveSpeed.ToString("F0");
+            txt_CurrentUltimatime.text = ultimateCount.ToString("F0");
             txt_CurrentBatForce.text = batForce.ToString("F0");
             txt_CurrentBallForce.text = ballForce.ToString("F0");
             txt_CurrentSwing.text = swingForce.ToString("F0");
 
             yield return null;
         }
-        txt_Updatespeed.gameObject.SetActive(false);
-        txt_UpdateBatForce.gameObject.SetActive(false);
-        txt_UpdateSwing.gameObject.SetActive(false);
+
+        SetPlayerUpdateData(index);
+
         StartCoroutine(SliderAnimation());
     }
 
@@ -145,7 +193,8 @@ public class SelectedPlayerInfoUI : MonoBehaviour
             slider_Cards.value = Mathf.Lerp(slider_Cards.value, 0, currentTime);
             yield return null;
         }
-        img_FillSlider.color = Color.blue;
+        img_LevelUpIndicator.gameObject.SetActive(false);
+        img_FillSlider.sprite = sprite_GreenFill;
     }
 
     public void OnClick_SelectPlayer()
@@ -159,10 +208,10 @@ public class SelectedPlayerInfoUI : MonoBehaviour
     public void OnClick_UpgradePlayer()
     {
         PlayerManager.Instance.all_Players[index].currentLevel++;
-        StartCoroutine(AnimationPlayerState());
         PlayerManager.Instance.all_Players[index].playerState = PlayerState.HasCards;
         PlayerManager.Instance.all_Players[index].currentCards = 0;
         UIManager.instance.ui_PlayerSelect.SetAllPlayerData(index);
+        StartCoroutine(AnimationPlayerState());
     }
 
 

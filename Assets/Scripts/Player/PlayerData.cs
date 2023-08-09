@@ -11,9 +11,16 @@ public enum PlayerState
 
 }
 
+public enum PlayerType
+{
+    Common,
+    Rare,
+    Epic
+}
+
 public class PlayerData : MonoBehaviour
 {
-
+    public PlayerType playerType;
     public PlayerState playerState;
 
     [Space]
@@ -22,11 +29,13 @@ public class PlayerData : MonoBehaviour
     public int currentLevel;
     public int currentCards;
     public int[] requireCardsToUnlock;
-    public float[] moveSpeed;
+
     public float[] minBatForce;
     public float[] maxBatForce;
     public float[] minBallForce;
     public float[] maxBallForce;
     public float[] minSwingForce;
     public float[] maxSwingForce;
+
+    public float[] ultimateCount;
 }

@@ -23,10 +23,8 @@ public class SlotTimerUI : MonoBehaviour
         CalculateUnlockTime(TimeManager.Instance.currentSlotTime[index]);
     }
 
-    public void SetSlotTimerData(string _name , Sprite _icon , float _unlockTime , int _numberOfRewards , int _requireAmountForUnlock)
+    public void SetSlotTimerData(string _name  , float _unlockTime , int _numberOfRewards , int _requireAmountForUnlock)
     {
-        txt_SlotName.text = _name;
-        img_SlotIcon.sprite = _icon;
         CalculateUnlockTime(_unlockTime);
         txt_NumberOfRewards.text = "x"+_numberOfRewards.ToString();
         txt_GemsForUnlockReward.text = _requireAmountForUnlock.ToString();

@@ -7,12 +7,17 @@ public class DataManager : MonoBehaviour
     public static DataManager Instance;
 
 
+    public string playerName;
+    public int profileIconIndex;
     public int totalCoins;
     public int totalTrophies;
     public int totalGems;
+    public int totalSkipIt;
     public int playerLevel;
     public int playerXP;
     public float requireXPForLevelup;
+
+    public float dailyMissionTime;
 
     public float xpIncreasePR;
 
@@ -78,7 +83,7 @@ public class DataManager : MonoBehaviour
         SetPlayerCoins(totalCoins); //Set PLyaer coins
         totalCoins = GetPlayerCoins();
 
-      //  PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, totalCoins);
+        //  PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GAMECOINS, totalCoins);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_TROPHIES, totalTrophies);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_GEMS, totalGems);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS, 0);
@@ -87,16 +92,18 @@ public class DataManager : MonoBehaviour
 
         SetRequireXP(requireXPForLevelup);
         requireXPForLevelup = GetRequireXP();
-        
+
         SetActivePlayerIndex(0); // Set Active Player Index
         activePlayerIndex = GetActivePlayerIndex();
+
+        SetDailyMissionTime(dailyMissionTime); //Set Daily Mission time
 
         //Set Open Day For Daily Reward
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, 0);
         PlayerPrefs.SetInt(PlayerPrefsKeys.KET_DAYTIME, 24 * 60 * 60); // Day Time 24 Hours for Daily rewards
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME, 0);
         TimeManager.Instance.timeForDailyRewards = GetDayTime();
-        TimeManager.Instance.currentTime = GetDayTime();
+        TimeManager.Instance.currentDailyRewardTime = GetDayTime();
 
         //Set Slot State Empty
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
@@ -104,6 +111,9 @@ public class DataManager : MonoBehaviour
             SetRewardSlotState(i, SlotState.Empty);
             PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, 0);
         }
+
+
+        UIManager.instance.ui_Achievement.SpawnDailyMissions(); // Spawn all Daily missions
 
         //Set Achievement Current Value set 0
         for (int i = 0; i < numberOfAchivements; i++)
@@ -120,7 +130,7 @@ public class DataManager : MonoBehaviour
     private void GetPlayerData()
     {
         //Get Player Data
-       // totalCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
+        // totalCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
         totalTrophies = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_TROPHIES);
         totalGems = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GEMS);
 
@@ -134,11 +144,16 @@ public class DataManager : MonoBehaviour
 
         activePlayerIndex = GetActivePlayerIndex();
 
+        dailyMissionTime = GetDailyMissionTime();
+
         //Only For testing
         UIManager.instance.ui_UseableResouce.gameObject.SetActive(true);
 
+        UIManager.instance.ui_Achievement.SpawnDailyMissions(); // Spawn all Daily missions
 
-        TimeManager.Instance.SetTimeDataForDailyReward();
+
+        TimeManager.Instance.SetTimeDataForDailyReward(); // Set Daily reward time
+        TimeManager.Instance.SetDailyMissionTimeData(); // Set Daily Mission time
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
             string state = PlayerPrefs.GetString(PlayerPrefsKeys.KEY_REWARD_SLOT_STATE + i);
@@ -161,7 +176,7 @@ public class DataManager : MonoBehaviour
 
     public void CheckForPlayerLevelUP()
     {
-        if(playerXP >= requireXPForLevelup)
+        if (playerXP >= requireXPForLevelup)
         {
             UIManager.instance.LevelUpPopUpCalled();
             playerLevel++;
@@ -203,6 +218,16 @@ public class DataManager : MonoBehaviour
         if (totalGems < gemsAmount)
             return false;
         return true;
+    }
+
+
+    public bool IsEnoughSkipItForUse()
+    {
+        if (totalSkipIt > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
 
@@ -252,6 +277,23 @@ public class DataManager : MonoBehaviour
         StartCoroutine(UIManager.instance.ui_UseableResouce.TrophiesAnimation());
     }
 
+    public void IncreaseSkipIt(int _amount)
+    {
+        SetPlayerSkipIt(_amount);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.SkipItAnimation());
+        UIManager.instance.ui_HomePanel.ui_HomeScreen.SetWheelRedDot();
+    }
+    public void DecreaseSkipIt(int _amount)
+    {
+        totalSkipIt -= _amount;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_SKIPIT, totalSkipIt);
+        StartCoroutine(UIManager.instance.ui_UseableResouce.SkipItAnimation());
+        UIManager.instance.ui_HomePanel.ui_HomeScreen.SetWheelRedDot();
+    }
+
+
+
+
     #endregion
 
 
@@ -263,6 +305,36 @@ public class DataManager : MonoBehaviour
     #region PLAYERPREFS SET DATA
 
 
+    public void SetDailyMissionRewardState(int index, bool _state)
+    {
+        if (_state == false)
+        { PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_REWARD_CLAIMED + index, 0); }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_REWARD_CLAIMED + index, 1);
+        }
+    }
+
+    public void SetDailyMissionTime(float time)
+    {
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_DAILY_MISSION_TIME, time);
+    }
+
+    public void SetPlayerName(string name)
+    {
+        PlayerPrefs.SetString(PlayerPrefsKeys.KEY_PLAYER_NAME, name);
+    }
+
+    public void SetPlayerProfileImageIndex(int index)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_PROFILE_INDEX, index);
+    }
+
+    public void SetPlayerSkipIt(int value)
+    {
+        totalSkipIt += value;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_SKIPIT, totalSkipIt);
+    }
     public void SetRequireXP(float value)
     {
         PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REQUIREXP, value);
@@ -294,15 +366,15 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS, runs);
     }
 
-    public void SetArchivmentRewardState(int index , int i)
+    public void SetArchivmentRewardState(int index, int i)
     {
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_REWARD_COLLECTED + index, i);
     }
 
 
-    public void SetSlotUnlockTimer(int _index , float _time)
+    public void SetSlotUnlockTimer(int _index, float _time)
     {
-        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + _index , _time);
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + _index, _time);
     }
 
     public void SetDayTime(int _time)
@@ -312,12 +384,12 @@ public class DataManager : MonoBehaviour
 
     public void SetDailyRewardActiveTime(int i)
     {
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME , i);
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME, i);
     }
 
 
 
-    public void SetAchivementCurrentValue(int index , int value)
+    public void SetAchivementCurrentValue(int index, int value)
     {
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_CURRENT_VALUE + index, value);
     }
@@ -334,13 +406,40 @@ public class DataManager : MonoBehaviour
 
     public void SetRewardSlotTime(int index, float time)
     {
-        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index , time);
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index, time);
     }
 
     #endregion
 
     #region PLAYERPREFS GET DATA
 
+    public bool GetDailyMissionClaimedState(int index)
+    {
+        if (PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_REWARD_CLAIMED + index) == 0)
+            return false;
+        else
+            return true;
+    }
+
+    public float GetDailyMissionTime()
+    {
+        return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_DAILY_MISSION_TIME);
+    }
+
+    public string GetPlayerName()
+    {
+        return PlayerPrefs.GetString(PlayerPrefsKeys.KEY_PLAYER_NAME);
+    }
+
+    public int GetPlayerProfileIconIndex()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_PLAYER_PROFILE_INDEX);
+    }
+
+    public int GetTotalSkipIt()
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_SKIPIT);
+    }
 
     public float GetRequireXP()
     {

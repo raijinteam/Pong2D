@@ -10,5 +10,8 @@ public class DailyRewardButtonUI : MonoBehaviour
     public TextMeshProUGUI txt_Header;
     public Image img_Icon;
     public Image img_ClimedReward;
+    public RectTransform activeReward;
+    public RectTransform activeRewardHeader;
     public TextMeshProUGUI txt_RewardAmount;
+
 }
