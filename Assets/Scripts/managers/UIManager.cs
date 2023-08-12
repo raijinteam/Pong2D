@@ -30,21 +30,17 @@ public class UIManager : MonoBehaviour
     public PlayerSelectUI ui_PlayerSelect;
     public PlayerProfileUI ui_PlayerProfile;
     public FortuneWheelSpinUI ui_DailySpin;
-    public RewardScreenUI ui_Reward;
-    public MiniGamePlayUI ui_MiniGamePlay;
-
+    public GameObject ui_Reward;
+    public MiniGameUI ui_MiniGame;
+    public NotEnoughCurrencyPopUpUI ui_CurrencyPopup;
+    public DailyChallangeUI ui_DailyChallange;
 
     [Header("Required Components")]
     public GameObject pf_LevelUpPopUp;
     public RectTransform popUpSpwanPosition;
     public RectTransform cardAnimationPosition;
 
-    private void Update()
-    {
-        //Only for dubug
-        if (Input.GetKeyDown(KeyCode.S))
-            ui_Reward.gameObject.SetActive(true);
-    }
+
 
     public void LevelUpPopUpCalled()
     {

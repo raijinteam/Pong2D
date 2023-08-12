@@ -7,7 +7,7 @@ public class MiniGamePlayUI : MonoBehaviour
 {
 
 
-    [SerializeField] private TextMeshProUGUI txt_BallCount;
+    [SerializeField] private TextMeshProUGUI txt_MiniGameTimer;
     [SerializeField] private TextMeshProUGUI txt_HitCount;
 
 
@@ -16,9 +16,14 @@ public class MiniGamePlayUI : MonoBehaviour
         SetMiniGamePlayData();
     }
 
+    private void Update()
+    {
+        txt_MiniGameTimer.text = MiniGameManager.Instance.currentMiniGameTimer.ToString("F0");
+    }
+
     public void SetMiniGamePlayData()
     {
-        txt_BallCount.text = MiniGameManager.Instance.currentBallCount.ToString();
+        txt_MiniGameTimer.text = MiniGameManager.Instance.currentMiniGameTimer.ToString();
         txt_HitCount.text = MiniGameManager.Instance.targetHitCount.ToString();
     }
 }

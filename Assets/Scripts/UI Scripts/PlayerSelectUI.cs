@@ -67,29 +67,31 @@ public class PlayerSelectUI : MonoBehaviour
         {
 
             Debug.Log("Upgrade Player");
-            all_PlayerDetails[upgradeIndex].img_SliderFill.sprite = sprite_greenFill;
             if (PlayerManager.Instance.all_Players[upgradeIndex].playerState == PlayerState.HasCards)
             {
-
-                Sprite sprite = PlayerManager.Instance.all_Players[upgradeIndex].image;
-
-                PlayerManager.Instance.all_Players[upgradeIndex].currentCards++;
-                Debug.Log("CUrrent Cards : " + PlayerManager.Instance.all_Players[upgradeIndex].currentCards);
-                int currentPlayerLevel = PlayerManager.Instance.all_Players[upgradeIndex].currentLevel;
-                int currentCards = PlayerManager.Instance.all_Players[upgradeIndex].currentCards;
-
-                int requireCards = PlayerManager.Instance.all_Players[upgradeIndex].requireCardsToUnlock[currentPlayerLevel];
-
-                all_PlayerDetails[upgradeIndex].SetPlayerData(upgradeIndex,sprite, currentPlayerLevel, currentCards, requireCards);
-                PlayerManager.Instance.CheckIfPlayerHasEnoughCardsForUpgrade(upgradeIndex);
-
-                if (PlayerManager.Instance.all_Players[upgradeIndex].playerState == PlayerState.EnoughCardsForUpgrade)
-                {
-                    all_PlayerDetails[upgradeIndex].img_SliderFill.sprite = sprite_blueFill;
-                    all_PlayerDetails[upgradeIndex].img_LevelUpIndigator.gameObject.SetActive(true);
-                }
+                all_PlayerDetails[upgradeIndex].img_SliderFill.sprite = sprite_greenFill;
+                
+            }else if (PlayerManager.Instance.all_Players[upgradeIndex].playerState == PlayerState.EnoughCardsForUpgrade)
+            {
+                all_PlayerDetails[upgradeIndex].img_SliderFill.sprite = sprite_blueFill;
+                all_PlayerDetails[upgradeIndex].img_LevelUpIndigator.gameObject.SetActive(true);
             }
+                IncreasePlayerCards(1);
         }
+    }
+
+
+    private void IncreasePlayerCards(int amount)
+    {
+        Sprite sprite = PlayerManager.Instance.all_Players[upgradeIndex].image;
+        PlayerManager.Instance.all_Players[upgradeIndex].currentCards += amount;
+        int currentPlayerLevel = PlayerManager.Instance.all_Players[upgradeIndex].currentLevel;
+        int currentCards = PlayerManager.Instance.all_Players[upgradeIndex].currentCards;
+
+        int requireCards = PlayerManager.Instance.all_Players[upgradeIndex].requireCardsToUnlock[currentPlayerLevel];
+
+        all_PlayerDetails[upgradeIndex].SetPlayerData(upgradeIndex, sprite, currentPlayerLevel, currentCards, requireCards);
+        PlayerManager.Instance.SetPlayerState(upgradeIndex);
     }
 
 
@@ -104,10 +106,10 @@ public class PlayerSelectUI : MonoBehaviour
         int currentCards = PlayerManager.Instance.all_Players[currentActivePlayerIndex].currentCards;
 
         int requireCards = PlayerManager.Instance.all_Players[currentActivePlayerIndex].requireCardsToUnlock[currentPlayerLevel];
-       
+
         img_SliderFill.sprite = sprite_blueFill;
 
-        if(PlayerManager.Instance.IsEnoughCardsForUpgradePlayer(currentActivePlayerIndex))
+        if (PlayerManager.Instance.IsEnoughCardsForUpgradePlayer(currentActivePlayerIndex))
             img_SliderFill.sprite = sprite_greenFill;
 
         txt_UltimateCount.text = PlayerManager.Instance.all_Players[currentActivePlayerIndex].ultimateCount[currentPlayerLevel].ToString();
@@ -124,12 +126,18 @@ public class PlayerSelectUI : MonoBehaviour
 
     public void SetAllPlayerData(int index)
     {
+        all_PlayerDetails[index].img_Lock.gameObject.SetActive(false);
 
+        //Set Player State
+        PlayerManager.Instance.SetPlayerState(index);
 
-        if(PlayerManager.Instance.all_Players[index].playerState == PlayerState.NoCards)
+        all_PlayerDetails[index].slider_Cards.gameObject.SetActive(true);
+
+        if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.NoCards)
         {
             all_PlayerDetails[index].slider_Cards.gameObject.SetActive(false);
             all_PlayerDetails[index].level_Conrainer.gameObject.SetActive(false);
+            all_PlayerDetails[index].img_Lock.gameObject.SetActive(true);
         }
 
 
@@ -158,13 +166,14 @@ public class PlayerSelectUI : MonoBehaviour
 
     private void SetPlayerBG(int index) //Set player bg accroding to player type
     {
-        if(PlayerManager.Instance.all_Players[index].playerType == PlayerType.Common)
+        if (PlayerManager.Instance.all_Players[index].playerType == PlayerType.Common)
         {
             all_PlayerDetails[index].SetPlayerBG(sprite_CommonBG);
             all_PlayerDetails[index].img_BGGlow.color = commom_Glow;
             all_PlayerDetails[index].img_ForegroundGlow.color = common_BottomGlow;
 
-        }else if(PlayerManager.Instance.all_Players[index].playerType == PlayerType.Rare)
+        }
+        else if (PlayerManager.Instance.all_Players[index].playerType == PlayerType.Rare)
         {
             all_PlayerDetails[index].SetPlayerBG(sprite_RareBG);
             all_PlayerDetails[index].img_BGGlow.color = rare_Glow;

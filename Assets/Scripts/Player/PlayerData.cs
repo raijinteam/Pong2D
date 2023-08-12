@@ -28,6 +28,7 @@ public class PlayerData : MonoBehaviour
     public Sprite image;
     public int currentLevel;
     public int currentCards;
+    public int[] levelIncreaseAmount;
     public int[] requireCardsToUnlock;
 
     public float[] minBatForce;

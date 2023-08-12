@@ -7,6 +7,9 @@ using DG.Tweening;
 
 public class RewardScreenUI : MonoBehaviour
 {
+    [SerializeField] private bool isCardAnimated;
+
+
     [Header("Require Components")]
     [SerializeField] private GameObject pf_Card;
     [SerializeField] private Transform tf_CardSpawnPosition;
@@ -36,12 +39,13 @@ public class RewardScreenUI : MonoBehaviour
     [Header("Properites")]
     [SerializeField] private float flt_AnimationDuration = 0.5f;
 
+    private Sequence sequence;
 
     [SerializeField] private int index = 0;
     private int numberOfRewards;
     private int currentNumberOfRewards;
     private int slotFinishedIndex;
-    [SerializeField] private bool isCardAnimated;
+   
 
     private void OnEnable()
     {
@@ -73,13 +77,11 @@ public class RewardScreenUI : MonoBehaviour
                 this.gameObject.SetActive(false);
             }
 
-
-            //Debug.Log("Before Called index : " + index);
             StartAnimation();
             currentNumberOfRewards--;
             txt_NumberOfRewards.text = currentNumberOfRewards.ToString();
-            //Debug.Log("After Called index : " + index);
         }
+
 
     }
 
@@ -111,7 +113,7 @@ public class RewardScreenUI : MonoBehaviour
         if (isCardAnimated)
         {
             all_Cards[index - 1].gameObject.SetActive(false);
-            StopCoroutine(ShowCoinDetailsAnimationCO());
+            Debug.Log("Stop Coin Animation");
             ResetCoinDetails();
             if(index == 2)
             {
@@ -136,6 +138,7 @@ public class RewardScreenUI : MonoBehaviour
         Sequence seq = DOTween.Sequence();
         if(index == 0)
         {
+            Debug.Log("First Method");
             seq.AppendCallback(CardAnimation).AppendInterval(flt_AnimationDuration).OnComplete(ShowCoinDetails);
         }
         else if(index == 1)
@@ -168,6 +171,13 @@ public class RewardScreenUI : MonoBehaviour
         
     }
 
+
+    private void CoinAnimatins()
+    {
+        sequence = DOTween.Sequence();
+        sequence.AppendCallback(CardAnimation).AppendInterval(flt_AnimationDuration).OnComplete(ShowCoinDetails);
+
+    }
     private void CardAnimation()
     {
         Sequence seq = DOTween.Sequence();
@@ -180,23 +190,13 @@ public class RewardScreenUI : MonoBehaviour
     }
 
 
-    private IEnumerator ShowCoinDetailsAnimationCO()
-    {
-         Sequence se = DOTween.Sequence();
-        txt_ConisAmount.text = SlotsManager.Instance.allSlots[slotFinishedIndex].coinReward.ToString();
-        se.Append(img_CoinDetailsContainer.transform.DOScale(1, flt_AnimationDuration)).
-            Append(txt_ConisAmount.DOFade(1 , flt_AnimationDuration));
-        yield return null;
-    }
 
     private void ShowCoinDetails()
     {
-        StartCoroutine(ShowCoinDetailsAnimationCO());
-
-       /* Sequence se = DOTween.Sequence();
+        Sequence se = DOTween.Sequence();
         txt_ConisAmount.text = SlotsManager.Instance.allSlots[slotFinishedIndex].coinReward.ToString();
         se.Append(img_CoinDetailsContainer.transform.DOScale(1, flt_AnimationDuration)).
-            Append(txt_ConisAmount.DOFade(1 , flt_AnimationDuration));*/
+            Append(txt_ConisAmount.DOFade(1, flt_AnimationDuration));
     }
     private void ResetCoinDetails()
     {

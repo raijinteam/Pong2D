@@ -13,4 +13,9 @@ public class HomePanelUI : MonoBehaviour
         ui_Level.gameObject.SetActive(false);
         ui_HomeScreen.gameObject.SetActive(true);
     }
+
+    public void onclickPanel1()
+    {
+        Debug.Log("Clikck  Panel 1");
+    }
 }

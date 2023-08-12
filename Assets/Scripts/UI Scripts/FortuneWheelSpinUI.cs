@@ -9,6 +9,7 @@ public class FortuneWheelSpinUI : MonoBehaviour
 {
 
     [Header("Require Components")]
+    private bool canSpin;
     public bool isLastSpin;
     [SerializeField] private RectTransform wheelTransform;
     [SerializeField] private Button btn_Spin;
@@ -55,7 +56,7 @@ public class FortuneWheelSpinUI : MonoBehaviour
 
     private IEnumerator SpinWheelCO()
     {
-
+        canSpin = false;
         // Start Rotation
         wheelTransform.DORotate(new Vector3(0f, 0f, 720 * 1), 1, RotateMode.FastBeyond360).SetEase(Ease.InSine);
         yield return new WaitForSeconds(1);
@@ -96,33 +97,43 @@ public class FortuneWheelSpinUI : MonoBehaviour
         UIManager.instance.ui_RewardSummary.gameObject.SetActive(true);
         all_RewardsIcons[(int)landedSegment].transform.DOScale(1.7f, 0.5f);
         isSpinning = false;
+        canSpin = true;
+    }
+
+    public void OnClick_Close()
+    {
+        this.gameObject.SetActive(false);
     }
 
 
     public void OnClick_SpinWheel()
     {
+        if (canSpin)
+        {
+            if (DataManager.Instance.IsEnoughSkipItForUse())
+            {
+                DataManager.Instance.DecreaseSkipIt(skipitAmountForSpin);
+            }
+            else
+            {
+                //show a video
+            }
 
-        if (DataManager.Instance.IsEnoughSkipItForUse())
-        {
-            DataManager.Instance.DecreaseSkipIt(skipitAmountForSpin);
-        }
-        else
-        {
-            //show a video
+            //Set As Data
+            if (DataManager.Instance.IsEnoughSkipItForUse())
+            {
+                skipItContainer.gameObject.SetActive(true);
+                img_AdIcon.gameObject.SetActive(false);
+            }
+            else
+            {
+                skipItContainer.gameObject.SetActive(false);
+                img_AdIcon.gameObject.SetActive(true);
+            }
+
+            StartCoroutine(SpinWheelCO());
         }
 
-        //Set As Data
-        if (DataManager.Instance.IsEnoughSkipItForUse())
-        {
-            skipItContainer.gameObject.SetActive(true);
-            img_AdIcon.gameObject.SetActive(false);
-        }
-        else
-        {
-            skipItContainer.gameObject.SetActive(false);
-            img_AdIcon.gameObject.SetActive(true);
-        }
-
-        StartCoroutine(SpinWheelCO());
+       
     }
 }

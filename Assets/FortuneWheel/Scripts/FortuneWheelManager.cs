@@ -79,7 +79,7 @@ public class FortuneWheelManager : MonoBehaviour
 		}
 
 		if (IsFreeTurnEnabled) {
-			// Start our timer to next free turn
+			// Start our currentTimer to next free turn
 			SetNextFreeTime ();
 
 			if (!PlayerPrefs.HasKey(LAST_FREE_TURN_TIME_NAME)) {
@@ -154,7 +154,7 @@ public class FortuneWheelManager : MonoBehaviour
 			// We can't save long int to PlayerPrefs so store this value as string and convert to long later
 			PlayerPrefs.SetString (LAST_FREE_TURN_TIME_NAME, DateTime.Now.Ticks.ToString());
 
-			// Restart timer to next free turn
+			// Restart currentTimer to next free turn
 			SetNextFreeTime ();
 		}
 	}
@@ -202,7 +202,7 @@ public class FortuneWheelManager : MonoBehaviour
 			if (!IsPaidTurnEnabled)			// If our settings allow only free turns
 			{
 				ShowFreeTurnButton ();
-				DisableFreeTurnButton ();		// Make button inactive while spinning or timer to next free turn
+				DisableFreeTurnButton ();		// Make button inactive while spinning or currentTimer to next free turn
 
 			} else { 							// If player can turn for coins
 				ShowPaidTurnButton ();
@@ -220,7 +220,7 @@ public class FortuneWheelManager : MonoBehaviour
 		// We need to show TURN FOR FREE button or TURN FOR COINS button
 		ShowTurnButtons ();
 
-		// Show timer only if we enable free turns
+		// Show currentTimer only if we enable free turns
 		if (IsFreeTurnEnabled)
 			UpdateFreeTurnTimer ();
 
@@ -230,7 +230,7 @@ public class FortuneWheelManager : MonoBehaviour
 		// Animation time
 		float maxLerpRotationTime = 4f;
 
-		// increment animation timer once per frame
+		// increment animation currentTimer once per frame
 		_currentLerpRotationTime += Time.deltaTime;
 
 		// If the end of animation
@@ -305,7 +305,7 @@ public class FortuneWheelManager : MonoBehaviour
 		_timerRemainingMinutes = (int)(_nextFreeTurnTime - DateTime.Now).Minutes;
 		_timerRemainingSeconds = (int)(_nextFreeTurnTime - DateTime.Now).Seconds;
 
-		// If the timer has ended
+		// If the currentTimer has ended
 		if (_timerRemainingHours <= 0 && _timerRemainingMinutes <= 0 && _timerRemainingSeconds <= 0) {
 			NextFreeTurnTimerText.text = "Ready!";
 			// Now we have a free turn

@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public int inningIndex = 0; // store inning 
 
     [Header("Active Rounds Properites")]
-    [SerializeField] private float flt_ActiveGameTime; // When game start timer for game play
+    [SerializeField] private float flt_ActiveGameTime; // When game start currentTimer for game play
     public int roundWicketCount = 0; // total wickets in one inning
     public int roundRunsCount = 0; // total runs in one inning
     [SerializeField] private int maxWicketsForPlay; // the max wickets for complate one inning
@@ -79,10 +79,10 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.A))
+        /*if (Input.GetKeyDown(KeyCode.A))
         {
             UIManager.instance.ui_Achievement.increasemissinValue(1, 5);
-        }
+        }*/
 
 
         

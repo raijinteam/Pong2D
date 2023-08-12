@@ -14,9 +14,9 @@ public class MiniGameTarget : MonoBehaviour
             this.gameObject.SetActive(false);
             collision.gameObject.SetActive(false);
             MiniGameManager.Instance.targetHitCount++;
-            UIManager.instance.ui_MiniGamePlay.SetMiniGamePlayData();
+            UIManager.instance.ui_MiniGame.ui_MiniGamePlay.SetMiniGamePlayData();
             MiniGameManager.Instance.SpawnNewTarget();
-            MiniGameManager.Instance.SpawnNewBall();
+            //MiniGameManager.Instance.SpawnNewBall();
         }
     }
 }

@@ -14,11 +14,10 @@ public class MiniGameManager : MonoBehaviour
     }
 
     public bool isMiniGameStart;
-    public int score;
 
-    public int totalNumberOfBalls;
     public int targetHitCount;
-    public int currentBallCount;
+    public float miniGameRunningTimer;
+    public float currentMiniGameTimer;
 
     public GameObject pf_Ball;
     public GameObject pf_Target;
@@ -38,6 +37,22 @@ public class MiniGameManager : MonoBehaviour
     [SerializeField] private float maxPosY;
 
 
+    private void Start()
+    {
+        currentMiniGameTimer = miniGameRunningTimer;
+    }
+
+    private void Update()
+    {
+        if (isMiniGameStart)
+        {
+            currentMiniGameTimer -= Time.deltaTime;
+            if(currentMiniGameTimer <= 0)
+            {
+                MiniGameOver();
+            }
+        }
+    }
 
     public void SpawnNewTarget()
     {
@@ -53,18 +68,16 @@ public class MiniGameManager : MonoBehaviour
 
     }
 
-    public void CheckForAllBallUsed()
-    {
-        if(currentBallCount <= 0)
-        {
-            //Gane Complete
-            //GAme complete ui show
-            UIManager.instance.ui_MiniGamePlay.gameObject.SetActive(false);
-            isMiniGameStart = false;
-            Destroy(curremtBall);
-            pf_ActivePlayer.SetActive(false);
 
-        }
+    public void MiniGameOver()
+    {
+        isMiniGameStart = false;
+        currentMiniGameTimer = miniGameRunningTimer;
+        UIManager.instance.ui_MiniGame.ui_MiniGameCompelete.gameObject.SetActive(true);
+        UIManager.instance.ui_MiniGame.ui_MiniGamePlay.gameObject.SetActive(false);
+        Destroy(curremtBall);
+        pf_Target.gameObject.SetActive(false);
+        pf_ActivePlayer.SetActive(false);
     }
 
 
@@ -74,6 +87,9 @@ public class MiniGameManager : MonoBehaviour
         SpawnNewTarget();
         SpawnNewBall();
         SpawnActivePlayer();
+        UIManager.instance.ui_MiniGame.ui_MiniGamePlay.gameObject.SetActive(true);
+        UIManager.instance.ui_Navigation.gameObject.SetActive(false);
+        UIManager.instance.ui_UseableResouce.gameObject.SetActive(false);
     }
 
     public void SpawnNewBall()
@@ -81,11 +97,15 @@ public class MiniGameManager : MonoBehaviour
 
         if (isMiniGameStart)
         {
-            curremtBall = Instantiate(pf_Ball, Vector2.zero, Quaternion.identity);
+            curremtBall = Instantiate(pf_Ball, new Vector3(0 , 3 , 0), Quaternion.identity);
 
         }
     }
 
+    public int CalculateRewardAmount()
+    {
+        return targetHitCount;
+    }
 
     public void SpawnActivePlayer()
     {

@@ -12,7 +12,7 @@ public class SelectedPlayerInfoUI : MonoBehaviour
     private float batForce;
     private float ballForce;
     private float swingForce;
-
+    private int currentSelectedPlayerLevel;
 
     [SerializeField] private TextMeshProUGUI txt_PlayerName;
     [SerializeField] private Image img_PlayerIcon;
@@ -42,18 +42,23 @@ public class SelectedPlayerInfoUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_CurrentCards;
     [SerializeField] private TextMeshProUGUI txt_RequireCards;
     [SerializeField] private TextMeshProUGUI txt_Description;
-
+    [SerializeField] private TextMeshProUGUI txt_PlayerBuyAmount;
 
     [SerializeField] private Button btn_Select;
     [SerializeField] private Button btn_Upgrade;
 
+    private int playerBuyAmount;
 
+    private bool canPlayerClick;
 
     public void OnEnable()
     {
 
+        canPlayerClick = true;
+
         btn_Select.gameObject.SetActive(true);
         btn_Upgrade.gameObject.SetActive(true);
+        btn_Upgrade.interactable = false;
         img_LevelUpIndicator.gameObject.SetActive(false);
 
 
@@ -65,20 +70,34 @@ public class SelectedPlayerInfoUI : MonoBehaviour
         {
             btn_Select.gameObject.SetActive(false);
             btn_Upgrade.gameObject.SetActive(false);
-        } else if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.EnoughCardsForUpgrade)
+        }
+        else if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.EnoughCardsForUpgrade)
         {
             img_FillSlider.sprite = sprite_BlueFill;
+            btn_Upgrade.interactable = true;
+            img_LevelUpIndicator.gameObject.SetActive(true);
             SetPlayerUpdateData(index);
         }
 
-        int currentPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel;
+        currentSelectedPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel;
+        if (PlayerManager.Instance.IsPlayerReachMaxLevel(index))
+        {
+            txt_PlayerLevel.text = "Max";
+            btn_Upgrade.interactable = false;
+        }
+        else
+        {
+            txt_PlayerLevel.text = (currentSelectedPlayerLevel + 1).ToString();
+            playerBuyAmount = PlayerManager.Instance.all_Players[index].levelIncreaseAmount[currentSelectedPlayerLevel];
+            txt_PlayerBuyAmount.text = playerBuyAmount.ToString(); ;
+        }
+
         int currentCards = PlayerManager.Instance.all_Players[index].currentCards;
-        int requireCards = PlayerManager.Instance.all_Players[index].requireCardsToUnlock[currentPlayerLevel];
+        int requireCards = PlayerManager.Instance.all_Players[index].requireCardsToUnlock[currentSelectedPlayerLevel];
 
         img_PlayerIcon.sprite = PlayerManager.Instance.all_Players[index].image;
         txt_PlayerName.text = PlayerManager.Instance.all_Players[index].name;
 
-        txt_PlayerLevel.text = "Level " + currentPlayerLevel.ToString() ;
 
         txt_CurrentCards.text = currentCards.ToString();
         txt_RequireCards.text = requireCards.ToString();
@@ -97,42 +116,42 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     private void SetPlayerUpdateData(int index)
     {
-        int currentLevel = PlayerManager.Instance.all_Players[index].currentLevel;
+        currentSelectedPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel;
         txt_NewUltimatime.gameObject.SetActive(false);
         txt_NewBatForce.gameObject.SetActive(false);
         txt_NewBowlingForce.gameObject.SetActive(false);
         txt_NewBowingSwing.gameObject.SetActive(false);
 
-        float newBatForce = PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel];
+        float newBatForce = PlayerManager.Instance.all_Players[index].maxBatForce[currentSelectedPlayerLevel + 1] - PlayerManager.Instance.all_Players[index].maxBatForce[currentSelectedPlayerLevel];
 
-        float newBowlingForce = PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel];
+        float newBowlingForce = PlayerManager.Instance.all_Players[index].maxBallForce[currentSelectedPlayerLevel + 1] - PlayerManager.Instance.all_Players[index].maxBallForce[currentSelectedPlayerLevel];
 
-        float newBowlingSwing = PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel + 1] - PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel];
+        float newBowlingSwing = PlayerManager.Instance.all_Players[index].maxSwingForce[currentSelectedPlayerLevel + 1] - PlayerManager.Instance.all_Players[index].maxSwingForce[currentSelectedPlayerLevel];
 
-        float newultimateCount = PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel + 1] - PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel];
+        float newultimateCount = PlayerManager.Instance.all_Players[index].ultimateCount[currentSelectedPlayerLevel + 1] - PlayerManager.Instance.all_Players[index].ultimateCount[currentSelectedPlayerLevel];
 
 
         if (PlayerManager.Instance.all_Players[index].playerState == PlayerState.EnoughCardsForUpgrade)
         {
-            if(PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxBatForce[currentLevel + 1])
+            if (PlayerManager.Instance.all_Players[index].maxBatForce[currentSelectedPlayerLevel] != PlayerManager.Instance.all_Players[index].maxBatForce[currentSelectedPlayerLevel + 1])
             {
                 txt_NewBatForce.gameObject.SetActive(true);
-                txt_NewBatForce.text = "+" + newBatForce; 
+                txt_NewBatForce.text = "+" + Mathf.Abs( newBatForce);
             }
-            if (PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxBallForce[currentLevel + 1])
+            if (PlayerManager.Instance.all_Players[index].maxBallForce[currentSelectedPlayerLevel] != PlayerManager.Instance.all_Players[index].maxBallForce[currentSelectedPlayerLevel + 1])
             {
                 txt_NewBowlingForce.gameObject.SetActive(true);
-                txt_NewBowlingForce.text = "+" + newBowlingForce;
+                txt_NewBowlingForce.text = "+" + Mathf.Abs( newBowlingForce);
             }
-            if (PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel] != PlayerManager.Instance.all_Players[index].maxSwingForce[currentLevel + 1])
+            if (PlayerManager.Instance.all_Players[index].maxSwingForce[currentSelectedPlayerLevel] != PlayerManager.Instance.all_Players[index].maxSwingForce[currentSelectedPlayerLevel + 1])
             {
                 txt_NewBowingSwing.gameObject.SetActive(true);
-                txt_NewBowingSwing.text = "+" + newBowlingSwing;
+                txt_NewBowingSwing.text = "+" + Mathf.Abs( newBowlingSwing);
             }
-            if (PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel] != PlayerManager.Instance.all_Players[index].ultimateCount[currentLevel + 1])
+            if (PlayerManager.Instance.all_Players[index].ultimateCount[currentSelectedPlayerLevel] != PlayerManager.Instance.all_Players[index].ultimateCount[currentSelectedPlayerLevel + 1])
             {
                 txt_NewUltimatime.gameObject.SetActive(true);
-                txt_NewUltimatime.text = "+" + newultimateCount;
+                txt_NewUltimatime.text = "+" +Mathf.Abs( newultimateCount);
             }
         }
 
@@ -157,12 +176,14 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     private IEnumerator AnimationPlayerState()
     {
+        canPlayerClick = false;
+        btn_Upgrade.interactable = false;
         float currentTime = 0;
-        while(currentTime < 1)
+        while (currentTime < 1)
         {
 
-            int currentPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel ;
-            currentTime += Time.deltaTime / 1;
+            int currentPlayerLevel = PlayerManager.Instance.all_Players[index].currentLevel;
+            currentTime += Time.deltaTime / 1f;
             ultimateCount = Mathf.Lerp(ultimateCount, PlayerManager.Instance.all_Players[index].ultimateCount[currentPlayerLevel], currentTime);
 
             batForce = Mathf.Lerp(batForce, PlayerManager.Instance.all_Players[index].maxBatForce[currentPlayerLevel], currentTime);
@@ -178,40 +199,102 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
             yield return null;
         }
-
         SetPlayerUpdateData(index);
 
-        StartCoroutine(SliderAnimation());
     }
 
     private IEnumerator SliderAnimation()
     {
         float currentTime = 0;
-        while(currentTime < 1)
-        {
-            currentTime += Time.deltaTime / 5f;
-            slider_Cards.value = Mathf.Lerp(slider_Cards.value, 0, currentTime);
-            yield return null;
-        }
+        slider_Cards.value = 0;
         img_LevelUpIndicator.gameObject.SetActive(false);
         img_FillSlider.sprite = sprite_GreenFill;
+
+        currentTime = 0;
+        while (currentTime < 1)
+        {
+            currentTime += Time.deltaTime / 1f;
+            int currentCard = PlayerManager.Instance.all_Players[index].currentCards;
+            slider_Cards.value = Mathf.Lerp(0, currentCard, currentTime);
+            yield return null;
+        }
+
+        if (PlayerManager.Instance.IsEnoughCardsForUpgradePlayer(index))
+        {
+            Debug.Log("Has Cards for Upgrade");
+            btn_Upgrade.interactable = true;
+            img_LevelUpIndicator.gameObject.SetActive(true);
+            img_FillSlider.sprite = sprite_BlueFill;
+            PlayerManager.Instance.all_Players[index].playerState = PlayerState.EnoughCardsForUpgrade;
+        }
+        canPlayerClick = true;
     }
+
+
 
     public void OnClick_SelectPlayer()
     {
-        this.gameObject.SetActive(false);
-        DataManager.Instance.activePlayerIndex = index;
-        DataManager.Instance.SetActivePlayerIndex(index);
-        UIManager.instance.ui_PlayerSelect.SetCurrentActivePlayerData();
+        if (canPlayerClick)
+        {
+            DataManager.Instance.activePlayerIndex = index;
+            DataManager.Instance.SetActivePlayerIndex(index);
+            UIManager.instance.ui_PlayerSelect.SetCurrentActivePlayerData();
+            this.gameObject.SetActive(false);
+        }
+
     }
 
     public void OnClick_UpgradePlayer()
     {
-        PlayerManager.Instance.all_Players[index].currentLevel++;
-        PlayerManager.Instance.all_Players[index].playerState = PlayerState.HasCards;
-        PlayerManager.Instance.all_Players[index].currentCards = 0;
+
+        if (!DataManager.Instance.IsEnoughCoinsForPurchase(playerBuyAmount))
+        {
+            return;
+        }
+
+        if (index == DataManager.Instance.activePlayerIndex)
+            UIManager.instance.ui_PlayerSelect.SetCurrentActivePlayerData();
+
+
+
+        DataManager.Instance.DecreaseCoins(playerBuyAmount); // USe Coins
+
+
+        
+
+        //Decrease hero cards
+        int playerCurrentCard = PlayerManager.Instance.all_Players[index].currentCards;
+        int playerRequireCards = PlayerManager.Instance.all_Players[index].requireCardsToUnlock[PlayerManager.Instance.all_Players[index].currentLevel];
+        PlayerManager.Instance.all_Players[index].currentCards = playerCurrentCard - playerRequireCards;
+        playerBuyAmount = PlayerManager.Instance.all_Players[index].levelIncreaseAmount[PlayerManager.Instance.all_Players[index].currentLevel];
+
+        DataManager.Instance.SetHeroCard(index, PlayerManager.Instance.all_Players[index].currentCards);
+
+        //first increase player level
+        PlayerManager.Instance.IncreasePlayerLevel(index);
+
+        //Set Here Player Data
+        txt_PlayerLevel.text = PlayerManager.Instance.all_Players[index].currentLevel.ToString();
+        txt_CurrentCards.text = PlayerManager.Instance.all_Players[index].currentCards.ToString();
+        txt_RequireCards.text = PlayerManager.Instance.all_Players[index].requireCardsToUnlock[PlayerManager.Instance.all_Players[index].currentLevel].ToString();
+        txt_PlayerBuyAmount.text = playerBuyAmount.ToString(); ;
+
+
+
+        //set selected player data in palyer select ui
         UIManager.instance.ui_PlayerSelect.SetAllPlayerData(index);
+
+        PlayerManager.Instance.all_Players[index].playerState = PlayerState.HasCards;
+
+       
+
+
+
+
+        
+        
         StartCoroutine(AnimationPlayerState());
+        StartCoroutine(SliderAnimation());
     }
 
 
@@ -219,7 +302,11 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     public void OnClick_Close()
     {
-        this.gameObject.SetActive(false);
+        if (canPlayerClick)
+        {
+
+            this.gameObject.SetActive(false);
+        }
     }
 
 }

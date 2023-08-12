@@ -44,11 +44,6 @@ public class MiniGameBall : MonoBehaviour
         else if (collision.gameObject.tag.Equals("UpWall"))
         {
             Debug.Log("Collide with ball");
-            
-            MiniGameManager.Instance.CheckForAllBallUsed();
-            MiniGameManager.Instance.currentBallCount--;
-            MiniGameManager.Instance.SpawnNewBall();
-            UIManager.instance.ui_MiniGamePlay.SetMiniGamePlayData();
             ball_Rb.velocity = ball_Rb.velocity.normalized * 10;
             Destroy(gameObject);
         }

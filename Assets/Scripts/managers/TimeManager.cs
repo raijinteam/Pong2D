@@ -8,13 +8,19 @@ public class TimeManager : MonoBehaviour
 
     public static TimeManager Instance;
 
-    public int timeForDailyRewards;
     public float activeGameTime;
+    [Header("Daily Reward")]
+    public int timeForDailyRewards;
     public float currentDailyRewardTime;
+    [Header("Slot timer")]
     public float[] currentSlotTime;
-
+    [Header("Daily Mission")]
     public float dailyMissionTime;
     public float currentDailyMissionTime;
+    [Header("Daily Challange")]
+    public float dailyChallangeTime;
+    public float currentDailyChallangeTime;
+
 
     private TimeSpan timeSpan;
 
@@ -23,8 +29,10 @@ public class TimeManager : MonoBehaviour
         Instance = this;
     }
 
+
     public void SetDailyMissionTimeData()
     {
+        //Debug.Log("Daily misison first called");
         CalculateTimeForDailyMission();
         currentDailyMissionTime = dailyMissionTime;
     }
@@ -39,9 +47,15 @@ public class TimeManager : MonoBehaviour
     public void SetTimeDataForDailyReward()
     {
         CalculateTimeForDailyReward();
-        currentDailyRewardTime = timeForDailyRewards;
+       // Debug.Log("Get Time : " + DataManager.Instance.GetDayTime());
+        currentDailyRewardTime = DataManager.Instance.GetDayTime();
     }
 
+    public void SetTimeDataForDailyChallange()
+    {
+        CalculateTimeForDailyChallange();
+        currentDailyChallangeTime = DataManager.Instance.GetDailyChallangeTime();
+    }
 
     // Update is called once per frame
     void Update()
@@ -51,6 +65,8 @@ public class TimeManager : MonoBehaviour
         CalculateDailyRewardTimeWhenGameIsRunning();
 
         CalculateDailyMissionTimeWhenGameIsRunning();
+
+        CalculateDailyChallangeTimeWhenGameIsRunning();
 
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
@@ -66,22 +82,27 @@ public class TimeManager : MonoBehaviour
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
             DataManager.Instance.SetRewardSlotTime(i, currentSlotTime[i]);
-            //PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i, currentSlotTime[i]);
-            //Debug.Log("Player prefs Slot TIme : " + i +" " +  PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + i));
         }
 
         //time for remainng 
-        int totalTime = timeForDailyRewards - (int)activeGameTime;
+        int totalTime = (int)currentDailyRewardTime - (int)activeGameTime;
         DataManager.Instance.SetDayTime(totalTime);
         float totalDailyMissionTime = dailyMissionTime - activeGameTime;
         DataManager.Instance.SetDailyMissionTime(totalDailyMissionTime);
 
-        //  Debug.Log("Total Day time : " + DataManager.Instance.GetDayTime());
+        if (DataManager.Instance.GetDailyChallangeRewardClaimedState())
+        {
+            float totalDailyChallangeTime = dailyChallangeTime - activeGameTime;
+            DataManager.Instance.SetDailyChallangeTime(totalDailyChallangeTime);
+        }
+
+        
 
         DateTime gameQuitTime = DateTime.Now;
         DataManager.Instance.SetGameQuitTime(gameQuitTime.ToString());
-        // PlayerPrefs.SetString(PlayerPrefsKeys.KEY_GAME_QUIT_TIME, gameQuitTime.ToString());
     }
+
+
 
 
 
@@ -97,11 +118,13 @@ public class TimeManager : MonoBehaviour
             if (currentTime > quitTime)
             {
                 timeSpan = currentTime - quitTime;
-              //  Debug.Log("Total Quit Seconds : " + (float)timeSpan.TotalSeconds);
+               Debug.Log("Total Quit Seconds : " + (float)timeSpan.TotalSeconds);
             }
         }
     }
 
+
+    #region Daili Reward
 
     public void CalculateTimeForDailyReward()
     {
@@ -111,7 +134,11 @@ public class TimeManager : MonoBehaviour
 
         //  Debug.Log("Total Day time is : " + (dayTime - (int)timeSpan.TotalSeconds));
 
-        timeForDailyRewards = dayTime - (int)timeSpan.TotalSeconds;
+        if (GameManager.instance.isDailyRewardCollected)
+        {
+            timeForDailyRewards = dayTime - (int)timeSpan.TotalSeconds;
+        }
+
 
         if (timeForDailyRewards <= 0)
         {
@@ -122,13 +149,33 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+    private void CalculateDailyRewardTimeWhenGameIsRunning()
+    {
+        if (GameManager.instance.isDailyRewardCollected)
+        {
+            currentDailyRewardTime -= Time.deltaTime;
+            if (currentDailyRewardTime <= 0)
+            {
+                DataManager.Instance.SetDailyRewardActiveTime(0);
+                GameManager.instance.CheckForDailyRewardTImeIsStart();
+                currentDailyRewardTime = timeForDailyRewards;
+            }
+        }
+    }
+
+    #endregion
+
+
+
+    #region Daily Missions
+
     public void CalculateTimeForDailyMission()
     {
         CalculateScreenOFTime();
-       // Debug.Log("Daily mission time : " + (int)DataManager.Instance.GetDailyMissionTime());
+        // Debug.Log("Daily mission time : " + (int)DataManager.Instance.GetDailyMissionTime());
         int dayTime = (int)DataManager.Instance.GetDailyMissionTime();
 
-      //  Debug.Log("Total Day time is : " + (dayTime - timeSpan.TotalSeconds));
+        //  Debug.Log("Total Day time is : " + (dayTime - timeSpan.TotalSeconds));
 
         dailyMissionTime = dayTime - (int)timeSpan.TotalSeconds;
 
@@ -136,10 +183,83 @@ public class TimeManager : MonoBehaviour
         {
             // Debug.Log("Set Reward Time");
             DataManager.Instance.SetDailyMissionTime(0);
+            DataManager.Instance.SetDailyMissionOnedayComplete(true);
+            UIManager.instance.ui_Achievement.ResetAllListData();
+            UIManager.instance.ui_Achievement.SpawnDailyMissions();
+            Debug.Log("In Time manager 1");
             timeForDailyRewards = (int)DataManager.Instance.dailyMissionTime;
         }
     }
 
+
+    private void CalculateDailyMissionTimeWhenGameIsRunning()
+    {
+
+        currentDailyMissionTime -= Time.deltaTime;
+        if (currentDailyMissionTime <= 0)
+        {
+            DataManager.Instance.SetDailyMissionTime(0);
+            //    Debug.Log("Set Reward Time");
+            DataManager.Instance.SetDailyMissionOnedayComplete(true);
+            Debug.Log("In Time manager 2");
+            UIManager.instance.ui_Achievement.ResetAllListData();
+            UIManager.instance.ui_Achievement.SpawnDailyMissions();
+            currentDailyMissionTime = DataManager.Instance.dailyMissionTime;
+        }
+
+    }
+
+    #endregion
+
+
+    #region Daily Challange
+
+    public void CalculateTimeForDailyChallange()
+    {
+        CalculateScreenOFTime();
+        // Debug.Log("Daily mission time : " + (int)DataManager.Instance.GetDailyMissionTime());
+        int dayTime = (int)DataManager.Instance.GetDailyChallangeTime();
+
+        //  Debug.Log("Total Day time is : " + (dayTime - timeSpan.TotalSeconds));
+
+        if (DataManager.Instance.GetDailyChallangeRewardClaimedState())
+        {
+            dailyChallangeTime = dayTime - (int)timeSpan.TotalSeconds;
+
+            Debug.Log("Daily Challange Time : " + dailyChallangeTime);
+            if (dailyChallangeTime <= 0)
+            {
+                // Debug.Log("Set Reward Time");
+                DataManager.Instance.SetDailyChallangeTime(0);
+                DataManager.Instance.SetDailyChallangeFinishedState(false);
+                dailyChallangeTime = (int)DataManager.Instance.dailyChallangeTime;
+            }
+        }
+        
+
+
+    }
+
+
+    private void CalculateDailyChallangeTimeWhenGameIsRunning()
+    {
+        if (DataManager.Instance.GetDailyChallangeRewardClaimedState())
+        {
+            currentDailyChallangeTime -= Time.deltaTime;
+            if (currentDailyChallangeTime <= 0)
+            {
+                DataManager.Instance.SetDailyChallangeTime(0);
+                currentDailyMissionTime = DataManager.Instance.dailyChallangeTime;
+            }
+        }
+        
+
+    }
+
+    #endregion
+
+
+    #region Slot Timer
 
     public void CalculateTimeForSLots(int _index)
     {
@@ -160,39 +280,9 @@ public class TimeManager : MonoBehaviour
                 DataManager.Instance.SetRewardSlotState(_index, SlotState.RewardGenrated);
                 UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
                 UIManager.instance.ui_SlotTimer.gameObject.SetActive(false);
-                currentSlotTime[_index] = SlotsManager.Instance.allSlots[_index].timer;
+                currentSlotTime[_index] = SlotsManager.Instance.allSlots[_index].currentTimer;
             }
         }
-    }
-
-
-
-    private void CalculateDailyRewardTimeWhenGameIsRunning()
-    {
-        if (GameManager.instance.isDailyRewardCollected)
-        {
-            currentDailyRewardTime -= Time.deltaTime;
-            if (currentDailyRewardTime <= 0)
-            {
-                DataManager.Instance.SetDailyRewardActiveTime(0);
-                GameManager.instance.CheckForDailyRewardTImeIsStart();
-                //    Debug.Log("Set Reward Time");
-                currentDailyRewardTime = DataManager.Instance.dailyRewardTime;
-            }
-        }
-    }
-
-    private void CalculateDailyMissionTimeWhenGameIsRunning()
-    {
-
-        currentDailyMissionTime -= Time.deltaTime;
-        if (currentDailyMissionTime <= 0)
-        {
-            DataManager.Instance.SetDailyMissionTime(0);
-            //    Debug.Log("Set Reward Time");
-            currentDailyMissionTime = DataManager.Instance.dailyMissionTime;
-        }
-
     }
 
 
@@ -200,19 +290,32 @@ public class TimeManager : MonoBehaviour
     {
         if (SlotsManager.Instance.allSlots[index].slotState == SlotState.TimerStart)
         {
-            //Debug.Log("Method is Running");
-            //Calculate Time When Game is Running
             currentSlotTime[index] -= Time.deltaTime;
             if (currentSlotTime[index] <= 0)
             {
-                //Give Reward
-                //    Debug.Log("Slot Unlocked");
                 SlotsManager.Instance.isAnotherSlotHasActiveTime = false;
                 DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
                 UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
                 UIManager.instance.ui_SlotTimer.gameObject.SetActive(false);
-                currentSlotTime[index] = SlotsManager.Instance.allSlots[index].timer;
+                currentSlotTime[index] = SlotsManager.Instance.allSlots[index].currentTimer;
             }
         }
     }
+
+    #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

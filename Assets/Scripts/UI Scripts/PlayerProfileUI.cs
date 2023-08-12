@@ -18,7 +18,8 @@ public class PlayerProfileUI : MonoBehaviour
     private void OnEnable()
     {
         int currentActivePlauer = DataManager.Instance.activePlayerIndex;
-
+        name = DataManager.Instance.GetPlayerName();
+        input_PlayerName.text = name;
         img_PlayerProfile.sprite = PlayerManager.Instance.all_Players[currentActivePlauer].image;
        // txt_PlayerLevel.text = DataManager.Instance.playerLevel.ToString();
     }

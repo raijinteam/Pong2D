@@ -10,6 +10,7 @@ public class DailyMissionData : MonoBehaviour
     [Header("Daily Mission Data")]
 
     public int index;
+    public RewardType rewardType;
     public Image img_RewardIcon;
     public TextMeshProUGUI txt_Description;
     public TextMeshProUGUI txt_MissionCurrentValue;
@@ -36,14 +37,17 @@ public class DailyMissionData : MonoBehaviour
 
     public void OnClick_DailyMissionClaimButton()
     {
-        if (isGemsReward)
+        if (rewardType == RewardType.Gems)
         {
             //Increase Gems
             DataManager.Instance.IncreaseGems(int.Parse(txt_RewardAmount.text));
         }
-        else
+        else if(rewardType == RewardType.Coins)
         {
             DataManager.Instance.IncreaseCoins(int.Parse(txt_RewardAmount.text));
+        }else if(rewardType == RewardType.Skipitups)
+        {
+            DataManager.Instance.IncreaseSkipIt(int.Parse(txt_RewardAmount.text));
         }
 
         DataManager.Instance.SetDailyMissionRewardState(index, true);

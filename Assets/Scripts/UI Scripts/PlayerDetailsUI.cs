@@ -18,7 +18,7 @@ public class PlayerDetailsUI : MonoBehaviour
     public Slider slider_Cards;
     public Image img_SliderFill;
 
-
+    public Image img_Lock;
 
     public void SetPlayerBG(Sprite _bg)
     {
@@ -35,7 +35,7 @@ public class PlayerDetailsUI : MonoBehaviour
         }
         else
         {
-            txt_PlayerLevel.text = _playerLevel.ToString();
+            txt_PlayerLevel.text = (_playerLevel + 1).ToString();
         }
 
         img_Icon.sprite = _icon;

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4036abb3a0ada0641b4cf4b0daf0b5c4, type: 3}
   m_Name: Misson 4
   m_EditorClassIdentifier: 
-  isGemsReward: 0
+  rewardType: 0
   img_RewardIcon: {fileID: 21300000, guid: 33effd6735e414dc7b70ded5e8bb47f8, type: 3}
-  str_Description: Collect
+  str_Description: SO 4
   rewardAmount: 10
   missionCompeleteAmount: 20

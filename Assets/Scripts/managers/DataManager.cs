@@ -18,6 +18,7 @@ public class DataManager : MonoBehaviour
     public float requireXPForLevelup;
 
     public float dailyMissionTime;
+    public float dailyChallangeTime;
 
     public float xpIncreasePR;
 
@@ -90,6 +91,15 @@ public class DataManager : MonoBehaviour
         SetPlayerXP(0);
         playerXP = GetPlayerXP();
 
+
+        //Set First Player Give Cards
+        SetHeroCard(0, 5);
+        PlayerManager.Instance.SetAllPlayerLevel();
+
+
+
+        SetPlayerTotalRuns(0); // Set Total Player Runs
+
         SetRequireXP(requireXPForLevelup);
         requireXPForLevelup = GetRequireXP();
 
@@ -100,10 +110,14 @@ public class DataManager : MonoBehaviour
 
         //Set Open Day For Daily Reward
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAYS_COUNT, 0);
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KET_DAYTIME, 24 * 60 * 60); // Day Time 24 Hours for Daily rewards
+        SetDayTime(TimeManager.Instance.timeForDailyRewards);
+
+
+        SetDailyChallangeTime(dailyChallangeTime);
+
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILYREWARD_ACTIVE_TIME, 0);
-        TimeManager.Instance.timeForDailyRewards = GetDayTime();
-        TimeManager.Instance.currentDailyRewardTime = GetDayTime();
+        TimeManager.Instance.SetTimeDataForDailyReward();
+        TimeManager.Instance.SetTimeDataForDailyChallange();
 
         //Set Slot State Empty
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
@@ -113,6 +127,7 @@ public class DataManager : MonoBehaviour
         }
 
 
+        SetDailyMissionOnedayComplete(true);
         UIManager.instance.ui_Achievement.SpawnDailyMissions(); // Spawn all Daily missions
 
         //Set Achievement Current Value set 0
@@ -123,8 +138,25 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_REWARD_COLLECTED, 0);
 
 
+        //Set All Heros Level
+        for (int i = 0; i < PlayerManager.Instance.all_Players.Length; i++)
+        {
+            SetHeroLevel(i, 0);
+            SetHeroCard(i, 0);
+        }
+
+        //
+        TimeManager.Instance.SetDailyMissionTimeData(); // Set Daily Mission time
+
+
+        UIManager.instance.ui_DailyChallange.SetData(); // Set Data
+
+
         //Only For testing
         UIManager.instance.ui_UseableResouce.gameObject.SetActive(true);
+
+
+
     }
 
     private void GetPlayerData()
@@ -146,6 +178,9 @@ public class DataManager : MonoBehaviour
 
         dailyMissionTime = GetDailyMissionTime();
 
+        //Set All Heros Cards
+
+
         //Only For testing
         UIManager.instance.ui_UseableResouce.gameObject.SetActive(true);
 
@@ -154,6 +189,7 @@ public class DataManager : MonoBehaviour
 
         TimeManager.Instance.SetTimeDataForDailyReward(); // Set Daily reward time
         TimeManager.Instance.SetDailyMissionTimeData(); // Set Daily Mission time
+        TimeManager.Instance.SetTimeDataForDailyChallange();
         for (int i = 0; i < SlotsManager.Instance.allSlots.Length; i++)
         {
             string state = PlayerPrefs.GetString(PlayerPrefsKeys.KEY_REWARD_SLOT_STATE + i);
@@ -163,6 +199,14 @@ public class DataManager : MonoBehaviour
 
             TimeManager.Instance.SetSlotTimeData(i, playerPrefsTime);
         }
+
+        //Set All Player levels
+        PlayerManager.Instance.SetAllPlayerLevel();
+
+
+        UIManager.instance.ui_DailyChallange.SetData(); // Set Data
+
+
     }
 
 
@@ -178,7 +222,7 @@ public class DataManager : MonoBehaviour
     {
         if (playerXP >= requireXPForLevelup)
         {
-            UIManager.instance.LevelUpPopUpCalled();
+            //UIManager.instance.LevelUpPopUpCalled();
             playerLevel++;
             SetPlayerLevel(playerLevel);
             playerXP = 0;
@@ -209,14 +253,23 @@ public class DataManager : MonoBehaviour
     public bool IsEnoughCoinsForPurchase(int coinAmount)
     {
         if (totalCoins < coinAmount)
+        {
+            UIManager.instance.ui_CurrencyPopup.gameObject.SetActive(true);
+            UIManager.instance.ui_CurrencyPopup.SetMessage("Not Enough Coins For Purchase");
             return false;
+
+        }
         return true;
     }
 
     public bool IsEnoughGemssForPurchase(int gemsAmount)
     {
         if (totalGems < gemsAmount)
+        {
+            UIManager.instance.ui_CurrencyPopup.gameObject.SetActive(true);
+            UIManager.instance.ui_CurrencyPopup.SetMessage("Not Enough Gems For Purchase");
             return false;
+        }
         return true;
     }
 
@@ -303,6 +356,66 @@ public class DataManager : MonoBehaviour
 
 
     #region PLAYERPREFS SET DATA
+
+
+    public void SetHeroCard(int index , int value)
+    {
+        int currentCards = PlayerManager.Instance.all_Players[index].currentCards + value;
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_HERO_CARDS + index, currentCards);
+    }
+
+    public void SetDailyChallangeTime(float time)
+    {
+        PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_TIME, time);
+    }
+
+    public void SetDailyChallangeFinishedState(bool value)
+    {
+        if(value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_FINISHED, 0);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_FINISHED, 1);
+        }
+    }
+
+    public void SetDailyChallangeRewardClaimedState(bool value)
+    {
+        if (value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_REWARD_CLAIMED, 0);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_REWARD_CLAIMED, 1);
+        }
+    }
+
+    public void SetDailyMissionOnedayComplete(bool value)
+    {
+        if(value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_ONEDAY_COMPLETE, 0);
+        }
+        else
+        {
+            Debug.Log("Set One Day true");
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_ONEDAY_COMPLETE, 1);
+        }
+    }
+
+    public void SetDailyMisisonSOIndex(int index, int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_INDEX + index, value);
+    }
+
+
+    public void SetRewardSlotIndex(int index , int value)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_INDEX + index, value);
+    }
 
 
     public void SetDailyMissionRewardState(int index, bool _state)
@@ -409,9 +522,77 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetFloat(PlayerPrefsKeys.KEY_REWARD_SLOT_TIME + index, time);
     }
 
+    public void SetHeroLevel(int index, int level)
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_HERO_LEVEL + index, level);
+    }
+
     #endregion
 
     #region PLAYERPREFS GET DATA
+
+    public int GetHeroCards(int index)
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_HERO_CARDS + index);
+    }
+
+    public float GetDailyChallangeTime()
+    {
+        return PlayerPrefs.GetFloat(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_TIME);
+    }
+
+    public bool GetDailyChallangeFinishedState()
+    {
+        if (PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_FINISHED)==0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public bool GetDailyChallangeRewardClaimedState()
+    {
+        if (PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAILY_CHALLANGE_REWARD_CLAIMED) == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+
+
+    public bool GetDailyMissionOneDayComplete()
+    {
+        if(PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_ONEDAY_COMPLETE) == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public int GetDailyMisisonSOIndex(int index)
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_INDEX + index);
+    }
+    public int GetRewardSlotIndex(int index)
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_REWARD_SLOT_INDEX + index);
+    }
+
+
+    public int GetHeroLevel(int index)
+    {
+        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_HERO_LEVEL + index);
+    }
 
     public bool GetDailyMissionClaimedState(int index)
     {
