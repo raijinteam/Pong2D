@@ -35,7 +35,7 @@ public class MiniGameBall : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Name of collide : " + collision.gameObject.name);
+        //Debug.Log("Name of collide : " + collision.gameObject.name);
         if (collision.gameObject.tag.Equals("Player"))
         {
             playerHitForce = collision.gameObject.GetComponent<SweetPointForce>().CalculateBatHitForce(transform.position);
@@ -43,9 +43,9 @@ public class MiniGameBall : MonoBehaviour
         }
         else if (collision.gameObject.tag.Equals("UpWall"))
         {
-            Debug.Log("Collide with ball");
+            //Debug.Log("Collide with ball");
             ball_Rb.velocity = ball_Rb.velocity.normalized * 10;
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
     }
 }

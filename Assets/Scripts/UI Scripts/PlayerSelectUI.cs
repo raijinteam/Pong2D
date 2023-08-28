@@ -147,6 +147,8 @@ public class PlayerSelectUI : MonoBehaviour
 
         if (PlayerManager.Instance.IsEnoughCardsForUpgradePlayer(index))
         {
+            //Debug.Log(index + " This player has enough cards for upgrade");
+           // Debug.Log("Current Cards : " + PlayerManager.Instance.all_Players[index].currentCards + " Require Cards : " + PlayerManager.Instance.all_Players[index].requireCardsToUnlock[PlayerManager.Instance.all_Players[index].currentLevel]);
             all_PlayerDetails[index].img_SliderFill.sprite = sprite_blueFill;
             all_PlayerDetails[index].img_LevelUpIndigator.gameObject.SetActive(true);
         }
@@ -193,8 +195,16 @@ public class PlayerSelectUI : MonoBehaviour
         if (PlayerManager.Instance.all_Players[_index].playerState == PlayerState.NoCards)
             return;
 
-        UIManager.instance.ui_SelectedPlayerInfo.index = _index;
-        UIManager.instance.ui_SelectedPlayerInfo.gameObject.SetActive(true);
+        if (!DataManager.Instance.isGameFirstTimeLoad || (UIManager.instance.ui_Tutorial.toutorialState == TutorialState.PlayerDetails && _index == 0))
+        {
+            UIManager.instance.ui_SelectedPlayerInfo.index = _index;
+            UIManager.instance.ui_SelectedPlayerInfo.gameObject.SetActive(true);
+            UIManager.instance.ui_Tutorial.toutorialState = TutorialState.UpgradePlayer;
+        }else if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_SelectedPlayerInfo.index = _index;
+            UIManager.instance.ui_SelectedPlayerInfo.gameObject.SetActive(true);
+        }
     }
 
 }

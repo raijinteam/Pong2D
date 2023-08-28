@@ -26,6 +26,7 @@ public class PlayerData : MonoBehaviour
     [Space]
     public string Name;
     public Sprite image;
+    public Sprite paddleSprite;
     public int currentLevel;
     public int currentCards;
     public int[] levelIncreaseAmount;

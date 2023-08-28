@@ -31,14 +31,21 @@ public class RewardSummaryUI : MonoBehaviour
         }
     }
 
+
     public void OnClick_ClaimReward()
     {
+
+
+        if (DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_Tutorial.toutorialState = TutorialState.ClickPlayerMenu;
+            UIManager.instance.ui_Tutorial.gameObject.SetActive(true);
+        }
+
         for (int i = 0; i < allRewardIcons.Length; i++)
         {
             allRewardIcons[i].gameObject.SetActive(false);
         }
         this.gameObject.SetActive(false);
-
-
     }
 }

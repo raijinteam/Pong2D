@@ -87,33 +87,64 @@ public class RewardSlotsUI : MonoBehaviour
 
     public void OnClick_SlotStartTime(int index)
     {
+
+        //if Tutorial active and give chest so it need to open chest details ui not time start
+
+        if(DataManager.Instance.isGameFirstTimeLoad && index == 0)
+        {
+           
+            if(UIManager.instance.ui_Tutorial.toutorialState == TutorialState.CollecteChestRewards)
+            {
+                SlotsManager.Instance.SetAllRewardsData(index);
+                UIManager.instance.ui_Reward.gameObject.SetActive(true);
+                all_RewardSlots[index].EmptySlot();
+                UIManager.instance.ui_Tutorial.gameObject.SetActive(false);
+                DataManager.Instance.SetRewardSlotState(index, SlotState.Empty);
+                SetSlotsDataWhenChangeState();
+            }
+            else
+            {
+                //Open Chest
+                int numberOfRewards = SlotsManager.Instance.all_SlotData[0].numberOfRewards;
+                UIManager.instance.ui_Tutorial.toutorialState = TutorialState.UnlockChest;
+                UIManager.instance.ui_SlotTimer.SetSlotTimerData("First Slot", 5, numberOfRewards, 1);
+                UIManager.instance.ui_SlotTimer.gameObject.SetActive(true);
+            }
+        }
+        else  if(!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            if (SlotsManager.Instance.allSlots[index].slotState == SlotState.HasReward && !SlotsManager.Instance.isAnotherSlotHasActiveTime)
+            {
+                SlotsManager.Instance.isAnotherSlotHasActiveTime = true;
+                DataManager.Instance.SetRewardSlotState(index, SlotState.TimerStart);
+                SetSlotsDataWhenChangeState();
+            }
+            else if (SlotsManager.Instance.allSlots[index].slotState == SlotState.RewardGenrated)
+            {
+                //   Debug.Log("Reward Genrated");
+                SlotsManager.Instance.SetAllRewardsData(index);
+                UIManager.instance.ui_Reward.gameObject.SetActive(true);
+                all_RewardSlots[index].EmptySlot();
+                DataManager.Instance.SetRewardSlotState(index, SlotState.Empty);
+                SetSlotsDataWhenChangeState();
+            }
+            else if (SlotsManager.Instance.allSlots[index].slotState == SlotState.TimerStart)
+            {
+                int numberOFRewards = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].numberOfRewards;
+                int requireAmountForUnlock = SlotsManager.Instance.allSlots[index].requireAmountForUnlock;
+                float unlockTime = TimeManager.Instance.currentSlotTime[index];
+
+                UIManager.instance.ui_SlotTimer.index = index;
+                string name = SlotsManager.Instance.allSlots[index].name;
+                UIManager.instance.ui_SlotTimer.SetSlotTimerData(name, unlockTime, numberOFRewards, requireAmountForUnlock);
+                UIManager.instance.ui_SlotTimer.gameObject.SetActive(true);
+            }
+        }
+
+
+
        // Debug.Log("Sloyt State : " + SlotsManager.Instance.allSlots[index].slotState);
         Debug.Log("Clicked");
-        if(SlotsManager.Instance.allSlots[index].slotState == SlotState.HasReward && !SlotsManager.Instance.isAnotherSlotHasActiveTime)
-        {
-            SlotsManager.Instance.isAnotherSlotHasActiveTime = true;
-            DataManager.Instance.SetRewardSlotState(index, SlotState.TimerStart);
-            SetSlotsDataWhenChangeState();
-        }
-        else if(SlotsManager.Instance.allSlots[index].slotState == SlotState.RewardGenrated)
-        {
-            //   Debug.Log("Reward Genrated");
-            SlotsManager.Instance.SetAllRewardsData(index);
-            UIManager.instance.ui_Reward.gameObject.SetActive(true);
-            all_RewardSlots[index].EmptySlot();
-            DataManager.Instance.SetRewardSlotState(index, SlotState.Empty);
-            SetSlotsDataWhenChangeState();
-        }
-        else if(SlotsManager.Instance.allSlots[index].slotState == SlotState.TimerStart)
-        {
-            int numberOFRewards = SlotsManager.Instance.allSlots[GameManager.instance.currentLevelIndex].numberOfRewards;
-            int requireAmountForUnlock = SlotsManager.Instance.allSlots[index].requireAmountForUnlock;
-            float unlockTime = TimeManager.Instance.currentSlotTime[index];
-
-            UIManager.instance.ui_SlotTimer.index = index;
-            string name = SlotsManager.Instance.allSlots[index].name;
-            UIManager.instance.ui_SlotTimer.SetSlotTimerData(name, unlockTime, numberOFRewards, requireAmountForUnlock) ;
-            UIManager.instance.ui_SlotTimer.gameObject.SetActive(true);
-        }
+        
     }
 }

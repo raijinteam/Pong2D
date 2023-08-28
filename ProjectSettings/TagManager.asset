@@ -21,6 +21,8 @@ TagManager:
   - enemy
   - powerup
   - MiniGameBall
+  - LeftSwingPoint
+  - RightSwingPoint
   layers:
   - Default
   - TransparentFX

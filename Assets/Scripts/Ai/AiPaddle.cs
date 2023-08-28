@@ -15,7 +15,6 @@ public enum AiPaddleDifficulty
 public class AiPaddle : MonoBehaviour
 {
     public bool isBatting;
-    [HideInInspector]
     public bool isHitBall;
     [SerializeField] private bool canPaddleResetRotation;
     [SerializeField] private float flt_RotationDelay;
@@ -65,9 +64,7 @@ public class AiPaddle : MonoBehaviour
 
     [Header("Ball Swing Proprties")]
     [SerializeField] private float flt_Swing_Force;
-    [HideInInspector]
     [SerializeField] private float flt_MinSwingForce;
-    [HideInInspector]
     [SerializeField] private float flt_MaxSwingForce;
 
 
@@ -118,7 +115,7 @@ public class AiPaddle : MonoBehaviour
             if (currentRotationDelay >= flt_RotationDelay)
             {
                 //remainingRotation = 180 - (transform.localEulerAngles.z % 180);
-                Debug.Log("Reset COur Run");
+               // Debug.Log("Reset COur Run");
 
                 if (coro_Reset == null && coro_Rotate == null) {
                     coro_Reset = StartCoroutine(ResetPaddle());
@@ -128,7 +125,6 @@ public class AiPaddle : MonoBehaviour
                 currentRotationDelay = 0;
             }
         }
-
     }
 
 
@@ -165,10 +161,11 @@ public class AiPaddle : MonoBehaviour
             followDistanceBaseOnDifficulty = flt_HighFollowDistance;
         }
 
-
+       // Debug.Log("Follow Distance : " + followDistanceBaseOnDifficulty);
         if (Vector3.Distance(ball.transform.position, this.transform.position) < followDistanceBaseOnDifficulty && !isHitBall)
         {
             isBallInRange = true;
+          //  Debug.Log("Ball in range of ai");
         }
 
         if (isBallInRange)
@@ -176,11 +173,14 @@ public class AiPaddle : MonoBehaviour
             //MOVE TORWARD TO BALL VIA AI DIFFICULTY
             Vector3 targetPosition = new Vector3(GameManager.instance.GetBall.transform.position.x + xPositionOffset, transform.position.y, transform.position.z);
 
+          //  Debug.Log("Move to ball");
+
             float step = /*flt_MoveSpeed * */speedBaseOnDifficulty * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
         }
         else
         {
+            //Debug.Log("Not move");
             Vector3 tragetPosition = new Vector3(0, transform.position.y, 0);
             float step = flt_MoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, tragetPosition, step);
@@ -252,84 +252,6 @@ public class AiPaddle : MonoBehaviour
         
     }
 
-    //private IEnumerator ResetPaddle()
-    //{
-    //    Vector3 startVector = transform.eulerAngles;
-
-    //    Vector3 stopRotation = new Vector3(0, 0, 180);
-
-
-    //    if ((transform.eulerAngles.z > flt_MinRotatinToReset &&  transform.eulerAngles.z < flt_MaxRotationToReset))
-    //    {
-    //        float fltCurrentTime = 0;
-    //        while (fltCurrentTime < 1)
-    //        {
-    //            fltCurrentTime += Time.deltaTime / 0.5f;
-
-    //            transform.eulerAngles = Vector3.Slerp(startVector, stopRotation, fltCurrentTime);
-    //            yield return null;
-    //        }
-    //        transform.eulerAngles = stopRotation;
-    //        transform.eulerAngles = new Vector3(0,0,Random.Range(0,15));
-    //    }
-    //}
-
-    
-    IEnumerator RotatePaddleRightSIde()
-    {
-        float currentRotation = transform.eulerAngles.z;
-        float targetRotation = flt_RotationRightANgle;
-        bool isRoate360 = false;
-        if (targetRotation < currentRotation)
-        {
-            isRoate360 = true;
-            targetRotation += 180;
-        }
-
-        while (targetRotation > currentRotation)
-        {
-            float rotationAmount = rotationSpeed * Time.deltaTime;
-            transform.Rotate(0f, 0f, rotationAmount);
-            currentRotation += rotationAmount;
-            yield return null;
-        }
-
-        if (isRoate360)
-        {
-            currentRotation -= 180;
-            targetRotation -= 180;
-            transform.eulerAngles = new Vector3(0, 0, currentRotation);
-        }
-    }
-
-    IEnumerator RotatePaddleLeftSide()
-    {
-        float currentRotation = transform.eulerAngles.z;
-        float targetRotation = flt_RotationLeftAngle;
-        bool isRotate360 = false;
-        if(targetRotation < currentRotation)
-        {
-            //Debug.Log("Current ROtation is big");
-           // Debug.Log("Current Rotation is : " + currentRotation + " Target Rotation is : " + targetRotation);
-            isRotate360 = true;
-            targetRotation += 180;
-        }
-
-        while(targetRotation > currentRotation)
-        {
-            float rotationAmount = rotationSpeed * Time.deltaTime;
-            transform.Rotate(0, 0, rotationAmount);
-            currentRotation += rotationAmount;
-            yield return null;
-        }
-        if (isRotate360)
-        {
-            currentRotation -= 180;
-            targetRotation -= 180;
-            transform.eulerAngles = new Vector3(0, 0, currentRotation);
-        }
-
-    }
 
 
     public float CaclulatePaddleForceForBall(Vector2 _traget)
@@ -342,11 +264,7 @@ public class AiPaddle : MonoBehaviour
         canRotateLeft = true;
         if (isBatting)
         {
-            canPaddleResetRotation = true;/*
-           /* if (transform.localEulerAngles.z >= 180)
-            {
-                transform.rotation = Quaternion.identity;
-            }*/
+            canPaddleResetRotation = true;
         }
 
         if (!isBatting)
@@ -397,9 +315,10 @@ public class AiPaddle : MonoBehaviour
                 distance = 0;
             }
 
-            distance *= flt_Swing_Force;
 
             distance = Mathf.Clamp(distance, flt_MinSwingForce, flt_MaxSwingForce);
+
+           // Debug.Log("Ai Paddle Swing force : " + distance);
             return distance;
         }
         else
@@ -433,7 +352,7 @@ public class AiPaddle : MonoBehaviour
 
         while (transform.rotation != target) {
             float step = flt_RoatationSpeed * Time.deltaTime;
-            Debug.Log("Coro Reset Start");
+           // Debug.Log("Coro Reset Start");
             transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
             yield return null;
         }
@@ -451,7 +370,7 @@ public class AiPaddle : MonoBehaviour
         while (transform.rotation != target) {
             float step = flt_RoatationSpeed * Time.deltaTime;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, target, step);
-            Debug.Log("Coro Rotate Start");
+           // Debug.Log("Coro Rotate Start");
             yield return null;
         }
         coro_Rotate = null;

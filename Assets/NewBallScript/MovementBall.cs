@@ -17,97 +17,85 @@ public class MovementBall : MonoBehaviour
 
     private float playerHitForce;
     private float aiHitForce;
-    private bool isCollideWithPlayer = false;
-    private bool isCollideWithAI = false;
 
     [SerializeField] private bool isSwinging = false;
     public float swingForce;
 
+    [SerializeField] private bool startRunDelayTimer;
+    [SerializeField] private bool canAddRuns;
+    [SerializeField] private float delayTimer;
+    private float currentDelayTimer;
+    private string Boundries = "Boundries";
+    private string wicket = "Wicket";
+
+
+    private bool isLeftSideTriggerTutorial;
+    private bool isRightSideTriggerTutorial;
+    private float currentTriggerTimerTutorial = 0;
+
 
     private void Start()
     {
-        moveDirection = Vector3.down;
-        //direction.right = moveDirection;
+        currentDelayTimer = delayTimer;
 
+        moveDirection = Vector3.down;
 
 
         ball_Rb.velocity = Vector3.down * flt_MoveSpeed ;
     }
 
 
-    private void FixedUpdate()
+    private void Update()
     {
-
-        Debug.Log("Velocity Megnitutad : " + ball_Rb.velocity.magnitude);
-
-
-
-
-        if (isSwinging)
+        if (startRunDelayTimer)
         {
-            ball_Rb.velocity = new Vector2(-1 + ball_Rb.velocity.x, ball_Rb.velocity.y);
-            //ball_Rb.AddForce(new Vector2(-1000 * Time.fixedDeltaTime, 0));
+            currentDelayTimer -= Time.deltaTime;
+            if(currentDelayTimer<= 0)
+            {
+                startRunDelayTimer = false;
+                currentDelayTimer = delayTimer;
+            }
         }
 
 
+        if (isLeftSideTriggerTutorial)
+        {
+            currentTriggerTimerTutorial += Time.deltaTime;
+            if(currentTriggerTimerTutorial >= 1)
+            {
+                currentTriggerTimerTutorial = 0;
+                UIManager.instance.ui_Tutorial.toutorialState = TutorialState.BallRightSwingMSG;
+                Time.timeScale = 0;
+                isLeftSideTriggerTutorial = false;
+            }
+        }
 
-        // else
-        // {
+        if (isRightSideTriggerTutorial)
+        {
+            currentTriggerTimerTutorial += Time.deltaTime;
+            if(currentTriggerTimerTutorial >= 1)
+            {
+                currentTriggerTimerTutorial = 0;
+                UIManager.instance.ui_Tutorial.toutorialState = TutorialState.BasicComplete;
+                Time.timeScale = 0;
+                isRightSideTriggerTutorial = false;
+            }
+        }
+    }
 
-        //     if(GetCurrentSpeed() < flt_MaxSpeed)
-        //     {
-        //         ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
-        //     }
+    private void FixedUpdate()
+    {
 
-        //     /*  if (isCollideWithPlayer)
-        //       {
-        //           ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y + playerHitForce * Time.deltaTime);
-        //       }*//*
-        //   else if (isCollideWithAI)
-        //   {
-        //       ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y + aiHitForce) * Time.deltaTime;
-        //   }*//*
-        //       else
-        //       {
-        //           ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
-        //       }
-        //       //ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);*/
-        // }
+        if (isSwinging)
+        {
+            ball_Rb.velocity = new Vector2(swingForce + ball_Rb.velocity.x, ball_Rb.velocity.y);
+        }
 
+        if(GetCurrentSpeed() >= flt_MaxSpeed)
+        {
+            
+        }
 
-        ///* if (GetCurrentSpeed() < flt_MaxSpeed)
-        // {
-        //     if (isCollideWithPlayer)
-        //     {
-        //         ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y + playerHitForce * Time.deltaTime);
-        //     }
-        //     else if(isCollideWithAI)
-        //     {
-        //         ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y + aiHitForce * Time.deltaTime);
-        //     }
-        //     else
-        //     {
-        //         ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y + flt_MoveSpeed * Time.deltaTime);
-        //     }
-        // }*/
-
-
-        //     //Debug.Log("Ball Velocity : " + ball_Rb.velocity);
-
-
-        // //    //ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
-
-
-
-        // //    if (isSwinging)
-        // //    {
-        // //        float swingDir = ball_Rb.velocity.x + swingForce;
-        // //        ball_Rb.velocity = new Vector2(swingDir, ball_Rb.velocity.y) * Time.deltaTime;
-        // //    }
-        // //    else
-        // //    {
-        // //        ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y) * Time.deltaTime * 10;
-        // //    }
     }
 
 
@@ -117,74 +105,115 @@ public class MovementBall : MonoBehaviour
     }
 
 
-    private void Update()
-    {
-        // ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
-
-        
-       
-    }
-
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //moveDirection = Vector3.Reflect(direction.right, collision.contacts[0].normal);
-
-        //direction.right = moveDirection;
-
         if (collision.gameObject.tag.Equals("Player") )
         {
-            isSwinging = false;
-            isCollideWithAI = false;
-            isCollideWithPlayer = true;
+
+            if (collision.gameObject.GetComponent<Player>().playerMovement.isBatting)
+            {
+                isSwinging = false;
+                canAddRuns = true;
+            }
+            else
+            {
+                isSwinging = true; 
+                canAddRuns = false;
+            }
+
             playerHitForce = collision.gameObject.GetComponent<SweetPointForce>().CalculateBatHitForce(transform.position);
+
+            swingForce = collision.gameObject.GetComponent<PlayerPaddleMovement>().CalculateDistanceFromSwingPoints(transform.position);
+
+
             ball_Rb.velocity = ball_Rb.velocity.normalized * 10;
 
-
-            // Debug.Log("Reset Velocity");
-
-            // Debug.Log("Player Hit FIrce : " + playerHitForce);
-
-            
-            //ball_Rb.AddForce( direction * 40, ForceMode2D.Force);
         }
         else if (collision.gameObject.tag.Equals("UpWall"))
         {
             isSwinging = false;
-            isCollideWithAI = false;
-            //Vector2 direction = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
+            Debug.Log("Collide with wall");
             ball_Rb.velocity = ball_Rb.velocity.normalized * 10;
-            // ball_Rb.AddForce(direction * 40, ForceMode2D.Force);
 
            
         }
         else if (collision.gameObject.tag.Equals("AI"))
         {
             isSwinging = true;
-            isCollideWithPlayer = false;
-            isCollideWithAI = true;
             aiHitForce = collision.gameObject.GetComponent<AiPaddle>().CaclulatePaddleForceForBall(transform.position);
-           // Debug.Log("Au Hit force " + aiHitForce);
 
-            
-           // Vector2 direction = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y);
+            canAddRuns = false;
+            if (collision.gameObject.TryGetComponent(out AiPaddle aiPaddle))
+            {
+                aiPaddle.isHitBall = false;
+                if(aiPaddle.isBatting)
+                {
+                    canAddRuns = true;
+                }
+            }
 
             ball_Rb.velocity = ball_Rb.velocity.normalized * 10;
-
-            //Debug.Log("Reset Velocity");
-
-            // ball_Rb.AddForce(direction * 40, ForceMode2D.Force);
-
-
-
-          //  Debug.Log("Ball velocity : " + ball_Rb.velocity);
 
             swingForce = collision.gameObject.GetComponent<AiPaddle>().CalculateDistanceFromSwingPoints(transform.position);
         }
     }
 
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-       
-    //}
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (canAddRuns)
+        {
+            if (collision.CompareTag(Boundries) && !startRunDelayTimer)
+            {
+                startRunDelayTimer = true;
+                int _score = collision.gameObject.GetComponent<Runs>().runs;
+                GameManager.instance.IncreaseScore(_score);
+                Debug.Log("Runs Add : " + _score);
+                // ScoreManager.instance.AddScore(_score);
+            }
+        }
+
+
+        var notStartBatTutorial = GameManager.instance.isBatTutorialGameStart == false;
+        var notStateBallTutorial = GameManager.instance.isBallTutorialStart == false;
+        var isNotMinigameActive = MiniGameManager.Instance.isMiniGameStart == false;
+
+
+        //if not start bat tutorial
+        //if not start ball tutorial
+        //if not active minigame
+        //then add wicket otherwise not 
+
+        if (collision.CompareTag(wicket) && notStartBatTutorial && notStateBallTutorial && isNotMinigameActive)
+        {
+            Debug.Log("Wickets Down");
+            GameManager.instance.IncreaseWicket();
+            GameManager.instance.SpawnNewBall();
+            //ScoreManager.instance.AddWicket();
+        }
+
+
+
+        //Check if tutorial is active
+        if (DataManager.Instance.isGameFirstTimeLoad)
+        {
+
+            var isBowlingLeftSideSwingTutorial = UIManager.instance.ui_Tutorial.toutorialState == TutorialState.BallLeftSwingPoint;
+            var isBowlingrightSideSwingTutorial = UIManager.instance.ui_Tutorial.toutorialState == TutorialState.BallRightSwingPoint;
+
+            if (collision.gameObject.CompareTag("LeftSwingPoint") && isBowlingLeftSideSwingTutorial)
+            {
+                //Go right side
+                isLeftSideTriggerTutorial = true;
+                Debug.Log("Left swing point trigger");
+            }
+
+            if(collision.gameObject.CompareTag("RightSwingPoint") && isBowlingrightSideSwingTutorial)
+            {
+                isRightSideTriggerTutorial = true;
+                Debug.Log("Right swing point trigger");
+            }
+
+        }
+    }
+
 }

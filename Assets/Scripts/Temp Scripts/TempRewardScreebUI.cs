@@ -65,7 +65,6 @@ public class TempRewardScreebUI : MonoBehaviour
         numberOfRewards = SlotsManager.Instance.allSlots[slotFinishedIndex].numberOfRewards;
         currentNumberOfRewards = numberOfRewards;
         txt_RewardAmount.text = numberOfRewards.ToString();
-        cardIndex = 0;
 
         for (int i = 0; i < numberOfRewards; i++)
         {
@@ -179,6 +178,7 @@ public class TempRewardScreebUI : MonoBehaviour
     {
         if (cardIndex < numberOfRewards)
         {
+            Debug.Log("INdex : " + cardIndex);
             switch (cardIndex)
             {
                 case 0:
@@ -224,7 +224,6 @@ public class TempRewardScreebUI : MonoBehaviour
                     break;
             }
         }
-
     }
 
     private void AnimateCard(Transform card)

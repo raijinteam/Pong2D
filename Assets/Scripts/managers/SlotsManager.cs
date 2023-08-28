@@ -34,13 +34,13 @@ public class SlotsManager : MonoBehaviour
         {
             if (allSlots[i].slotState == SlotState.Empty)
             {
-                Debug.Log("Set Reward Amount");
+              //  Debug.Log("Set Reward Amount");
                 allSlots[i].numberOfRewards = all_SlotData[GameManager.instance.currentLevelIndex].numberOfRewards;
                 DataManager.Instance.SetRewardSlotIndex(i, GameManager.instance.currentLevelIndex);
                 allSlots[i].requireAmountForUnlock = all_SlotData[GameManager.instance.currentLevelIndex].requireAmountForUnlock;
                 allSlots[i].name = all_SlotData[GameManager.instance.currentLevelIndex].name;
                 DataManager.Instance.SetSlotUnlockTimer(i, all_SlotData[GameManager.instance.currentLevelIndex].timer);
-                Debug.Log("Slot TImer : " + allSlots[GameManager.instance.currentLevelIndex].currentTimer);
+              //  Debug.Log("Slot TImer : " + allSlots[GameManager.instance.currentLevelIndex].currentTimer);
                 TimeManager.Instance.SetSlotTimeData(i, DataManager.Instance.GetSlotUnlockTime(i));
                 DataManager.Instance.SetRewardSlotState(i, SlotState.HasReward);
                 UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
@@ -131,7 +131,7 @@ public class SlotsManager : MonoBehaviour
     {
         int levelIndex = GameManager.instance.currentLevelIndex;
         int probality = Random.Range(all_SlotData[levelIndex].minGemsAmount, all_SlotData[levelIndex].maxGemsAmount);
-        Debug.Log("Gems AMount : " + probality);
+        //Debug.Log("Gems AMount : " + probality);
         return probality;
     }
 
@@ -139,7 +139,7 @@ public class SlotsManager : MonoBehaviour
     {
         int levelIndex = GameManager.instance.currentLevelIndex;
         int probality = Random.Range(all_SlotData[levelIndex].minSkipItAmount, all_SlotData[levelIndex].maxSkipItAmount);
-        Debug.Log("Skiptiup AMount : " + probality);
+      //  Debug.Log("Skiptiup AMount : " + probality);
         return probality;
     }
 

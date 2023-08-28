@@ -219,6 +219,18 @@ public class SelectedPlayerInfoUI : MonoBehaviour
             yield return null;
         }
 
+
+        //if its tutorial then upgrade complete then go to home screen
+        if (DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_Tutorial.gameObject.SetActive(false);
+            DataManager.Instance.isGameFirstTimeLoad = false;
+            DataManager.Instance.SetBasicTutorialState(DataManager.Instance.isGameFirstTimeLoad);
+            UIManager.instance.ui_Navigation.OnClick_MenuActivate(2);
+            this.gameObject.SetActive(false);
+            UIManager.instance.ui_Tutorial.toutorialState = TutorialState.MiniGame;
+        }
+
         if (PlayerManager.Instance.IsEnoughCardsForUpgradePlayer(index))
         {
             Debug.Log("Has Cards for Upgrade");
@@ -234,7 +246,7 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     public void OnClick_SelectPlayer()
     {
-        if (canPlayerClick)
+        if (canPlayerClick && !DataManager.Instance.isGameFirstTimeLoad)
         {
             DataManager.Instance.activePlayerIndex = index;
             DataManager.Instance.SetActivePlayerIndex(index);
@@ -246,6 +258,11 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     public void OnClick_UpgradePlayer()
     {
+
+
+        
+
+
 
         if (!DataManager.Instance.IsEnoughCoinsForPurchase(playerBuyAmount))
         {
@@ -286,13 +303,6 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
         PlayerManager.Instance.all_Players[index].playerState = PlayerState.HasCards;
 
-       
-
-
-
-
-        
-        
         StartCoroutine(AnimationPlayerState());
         StartCoroutine(SliderAnimation());
     }
@@ -302,9 +312,8 @@ public class SelectedPlayerInfoUI : MonoBehaviour
 
     public void OnClick_Close()
     {
-        if (canPlayerClick)
+        if (canPlayerClick && !DataManager.Instance.isGameFirstTimeLoad)
         {
-
             this.gameObject.SetActive(false);
         }
     }

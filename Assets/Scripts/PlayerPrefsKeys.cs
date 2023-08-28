@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class PlayerPrefsKeys
 {
     //Game Data
@@ -52,5 +48,9 @@ public class PlayerPrefsKeys
     public static string KEY_REWARD_SLOT_START_TIME = "RewardSlotStartTime";
     public static string KEY_REWARD_SLOT_GIVE = "IsRewardGive";
 
+    //Tutorials
 
+    public static string KEY_BASIC_TUTORIAL_STATE = "BasicTutorial";
+    public static string KEY_MINIGAME_TUTORIAL_STATE = "MinigameTutorialState";
+    public static string KEY_POWERUP_TUTORIAL_STATE = "PowerupTutorialState";
 }

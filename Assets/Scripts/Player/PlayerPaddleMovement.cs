@@ -10,15 +10,18 @@ public class PlayerPaddleMovement : MonoBehaviour
     [SerializeField] private Transform tf_RightSwingPoint;
     [SerializeField] private Transform tf_LeftSwingPoint;
     [SerializeField] private SweetPointForce sweetForce;
+    [SerializeField] private float flt_MinSwingForce;
+    [SerializeField] private float flt_MaxSwingForce;
 
 
     [Header("Player Properties")]
+    public bool isPlayerMoving;
     public bool isBatting;
-    private bool isPlayerRotating;
+    public bool isPlayerRotating;
     [SerializeField] private float flt_MoveSpeed;
     [SerializeField] private float flt_RotateSpeed;
     [SerializeField] private float fltClampOffset;
-    
+
 
     [Header("Swing Properites")]
     [SerializeField] private float flt_Swing_Force;
@@ -37,7 +40,7 @@ public class PlayerPaddleMovement : MonoBehaviour
 
     private void Start()
     {
-        float screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize ;
+        float screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize;
         flt_ScreenWidth = screenHalfWidthInWorldUnits - 0.5f;
     }
 
@@ -45,8 +48,7 @@ public class PlayerPaddleMovement : MonoBehaviour
     void Update()
     {
         UserInputs();
-        //  BatLeftAndRightScale();
-          PlayerSwipeMovement();
+        PlayerSwipeMovement();
         RotatePlayer();
 
 
@@ -81,26 +83,27 @@ public class PlayerPaddleMovement : MonoBehaviour
 
     private void PlayerSwipeMovement()
     {
-       if(Input.touchCount > 0)
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
 
-            if(touch.phase == TouchPhase.Moved)
+            if (touch.phase == TouchPhase.Moved)
             {
 
                 Vector3 newPostion = touch.deltaPosition * flt_MoveSpeed * Time.deltaTime;
 
-                transform.position += new Vector3(newPostion.x ,0 , 0);
+                transform.position += new Vector3(newPostion.x, 0, 0);
 
 
-            }else if(touch.phase == TouchPhase.Ended)
+            }
+            else if (touch.phase == TouchPhase.Ended)
             {
                 rb_PlayerBody.velocity = Vector2.zero;
             }
         }
     }
 
-    
+
     private void RotatePlayer()
     {
         if (isPlayerRotating)
@@ -112,6 +115,20 @@ public class PlayerPaddleMovement : MonoBehaviour
     private void PlayerMovements()
     {
         float moveAmount = horizontalMove * flt_MoveSpeed * Time.deltaTime;
+
+
+        //Check For Player Move
+        //this checker is used in user tutorial for check user has move for some time
+        if(moveAmount > 0 || moveAmount < 0)
+        {
+            isPlayerMoving = true;
+        }
+        else
+        {
+            isPlayerMoving = false;
+        }
+
+
 
         Vector2 tempPosition = rb_PlayerBody.position + new Vector2(moveAmount, 0);
 
@@ -171,9 +188,10 @@ public class PlayerPaddleMovement : MonoBehaviour
                 distance = 0;
             }
 
-            distance *= flt_Swing_Force;
+            // distance *= flt_Swing_Force;
 
-            //distance = Mathf.Clamp(distance, flt_MinSwingForce, flt_MaxSwingForce);
+            distance = Mathf.Clamp(distance, flt_MinSwingForce, flt_MaxSwingForce);
+            //Debug.Log("Swing Froce : " + distance);
             return distance;
         }
         else

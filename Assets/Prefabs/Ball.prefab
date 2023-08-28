@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3632763318094906714}
   - component: {fileID: 3632763318094906715}
   - component: {fileID: 3632763318094906708}
-  - component: {fileID: 3632763318094906709}
+  - component: {fileID: 5652807506137748270}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -73,7 +73,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &3632763318094906709
+--- !u!114 &5652807506137748270
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -82,29 +82,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 3632763318094906710}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca128546740964d45a47a6fe2a12b9f4, type: 3}
+  m_Script: {fileID: 11500000, guid: 264bdd1d30b4b2845b500aa26f534793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ball_Rb: {fileID: 3632763318094906708}
-  dirction: {fileID: 3632763319384427211}
-  dir: {x: 0, y: 0, z: 0}
-  flt_BallMoveSpeed: 5
-  canAddRuns: 0
+  flt_MoveSpeed: 3
+  direction: {fileID: 3632763319384427211}
+  moveDirection: {x: 0, y: 0, z: 0}
+  flt_MaxSpeed: 5
+  rigidBodyForce: 2
+  isSwinging: 0
+  swingForce: 0
   startRunDelayTimer: 0
-  flt_RunDelayTimer: 0.2
-  currentRunDelayTimer: 0
-  flt_BallMaxSpeed: 15
-  flt_MaxWallReflectionAngle: 10
-  isSwing: 0
-  flt_SwingAngle: 1
-  fltSwingForce: 0
-  swingDir: 0
-  UpWall: UpWall
-  BottomWall: BottomWall
-  Player: Player
-  AI: AI
-  Boundries: Boundries
-  Wicket: Wicket
+  canAddRuns: 0
+  delayTimer: 2
 --- !u!1 &3632763318392283860
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,7 +168,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1791624603
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 10
   m_Sprite: {fileID: -1845041415, guid: 3926137e48ab5ed4aadc60001f794622, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

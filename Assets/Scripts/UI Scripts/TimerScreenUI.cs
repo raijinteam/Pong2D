@@ -39,7 +39,25 @@ public class TimerScreenUI : MonoBehaviour
         {
             //GameManager.instance.isGamePlaying = true;
             this.gameObject.SetActive(false);
-            GameManager.instance.StartGame();
+
+            // Debug.Log("timer over");
+
+
+            UIManager.instance.ui_PlayScreen.allBoundries.gameObject.SetActive(true);
+            UIManager.instance.ui_PlayScreen.activeStates.gameObject.SetActive(true);
+
+            if (GameManager.instance.isBatTutorialGameStart)
+            {
+             //   Debug.Log("Bat tutorial Start");
+                GameManager.instance.SpawnNewBall();
+                GameManager.instance.SpawnNewTargetTutorial();
+            }
+            else
+            {
+                //Debug.Log("Game start");
+                GameManager.instance.StartGame();
+            }
+
 
         }
     }

@@ -75,6 +75,7 @@ public class MiniGameManager : MonoBehaviour
         currentMiniGameTimer = miniGameRunningTimer;
         UIManager.instance.ui_MiniGame.ui_MiniGameCompelete.gameObject.SetActive(true);
         UIManager.instance.ui_MiniGame.ui_MiniGamePlay.gameObject.SetActive(false);
+        GameManager.instance.boundriesSystem.gameObject.SetActive(true);
         Destroy(curremtBall);
         pf_Target.gameObject.SetActive(false);
         pf_ActivePlayer.SetActive(false);
@@ -88,6 +89,7 @@ public class MiniGameManager : MonoBehaviour
         SpawnNewBall();
         SpawnActivePlayer();
         UIManager.instance.ui_MiniGame.ui_MiniGamePlay.gameObject.SetActive(true);
+        GameManager.instance.boundriesSystem.gameObject.SetActive(false);
         UIManager.instance.ui_Navigation.gameObject.SetActive(false);
         UIManager.instance.ui_UseableResouce.gameObject.SetActive(false);
     }

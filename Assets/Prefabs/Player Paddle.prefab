@@ -356,7 +356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8635405609917541322
 Transform:
   m_ObjectHideFlags: 0
@@ -436,7 +436,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a7505ac7fcbf444a49b9ae2ca525ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 8635405609917541321}
+  paddleSprite: {fileID: 8635405608975090172}
 --- !u!114 &8635405609917541321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,15 +451,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb_PlayerBody: {fileID: 8635405609917541365}
-  tf_BatHitPoint: {fileID: 0}
+  tf_BatHitPoint: {fileID: 8635405610179361890}
   tf_RightSwingPoint: {fileID: 1849580591}
   tf_LeftSwingPoint: {fileID: 1270425464}
-  sweetForce: {fileID: 0}
-  isBatting: 0
-  flt_MoveSpeed: 3
+  sweetForce: {fileID: 8635405609917541320}
+  flt_MinSwingForce: -1
+  flt_MaxSwingForce: 1
+  isPlayerMoving: 0
+  isBatting: 1
+  isPlayerRotating: 0
+  flt_MoveSpeed: 7
   flt_RotateSpeed: 150
   fltClampOffset: 0.4
-  flt_Swing_Force: 0
+  flt_Swing_Force: 1
 --- !u!114 &8635405609917541320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,7 +478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tf_BatHitPoint: {fileID: 8635405610179361890}
   flt_MinHitForce: 1
-  flt_MaxHitForce: 3
+  flt_MaxHitForce: 2
   flt_MinHitPointDistacneOnBallTouch: 0.4
   flt_MaxHitPointDistranceOnBallTouch: 0.9
 --- !u!1 &8635405610179361891

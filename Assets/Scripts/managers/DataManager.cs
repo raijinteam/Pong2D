@@ -6,7 +6,8 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
 
-
+    public bool isGameFirstTimeLoad;
+    public bool canMiniGameTutorialShow;
     public string playerName;
     public int profileIconIndex;
     public int totalCoins;
@@ -42,11 +43,20 @@ public class DataManager : MonoBehaviour
         if (PlayerPrefs.HasKey(PlayerPrefsKeys.KEY_GAMECOINS))
         {
             GetPlayerData();
+            Debug.Log("first get data");
         }
         else
         {
             SetPlayerData();
         }
+
+
+        if (isGameFirstTimeLoad)
+        {
+            Debug.Log("tutorial");
+            StartGameTutorial();
+        }
+
     }
 
 
@@ -78,6 +88,12 @@ public class DataManager : MonoBehaviour
     {
         Debug.Log("Set Player Data");
 
+        isGameFirstTimeLoad = true;
+        canMiniGameTutorialShow = true;
+        SetBasicTutorialState(isGameFirstTimeLoad); // Show Basic Tutorial
+        SetMiniGameTutorialState(canMiniGameTutorialShow);//Minigame tutorial Game active but its show when player reach level 2
+        SetPowerupTutorialState(true);//Set Powerup tutorial active but it show when game is playing and playuer level reach 2
+
         SetPlayerLevel(1); // Set Player level;
         playerLevel = GetPlayerLevel();
 
@@ -91,9 +107,12 @@ public class DataManager : MonoBehaviour
         SetPlayerXP(0);
         playerXP = GetPlayerXP();
 
+        //Set Data on Useable Resource panel
+        UIManager.instance.ui_UseableResouce.SetAllUseableResourceData();
+
 
         //Set First Player Give Cards
-        SetHeroCard(0, 5);
+        SetHeroCard(0, 15);
         PlayerManager.Instance.SetAllPlayerLevel();
 
 
@@ -145,7 +164,7 @@ public class DataManager : MonoBehaviour
             SetHeroCard(i, 0);
         }
 
-        //
+        //Set Daily Mission Time data
         TimeManager.Instance.SetDailyMissionTimeData(); // Set Daily Mission time
 
 
@@ -161,8 +180,14 @@ public class DataManager : MonoBehaviour
 
     private void GetPlayerData()
     {
+        isGameFirstTimeLoad = GetBasicTutorialState() ;
+        canMiniGameTutorialShow = GetMinigameTutorialState();
+
+
+
+
         //Get Player Data
-        // totalCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
+         totalCoins = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GAMECOINS);
         totalTrophies = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_TROPHIES);
         totalGems = PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_GEMS);
 
@@ -173,6 +198,10 @@ public class DataManager : MonoBehaviour
         requireXPForLevelup = GetRequireXP();
 
         playerXP = GetPlayerXP();
+
+        //Set Data on Useable Resource panel
+        UIManager.instance.ui_UseableResouce.SetAllUseableResourceData();
+
 
         activePlayerIndex = GetActivePlayerIndex();
 
@@ -210,6 +239,11 @@ public class DataManager : MonoBehaviour
     }
 
 
+    public void StartGameTutorial()
+    {
+        UIManager.instance.ui_Tutorial.gameObject.SetActive(true);
+    }
+
 
     public void IncreaseXPCount(int value)
     {
@@ -228,6 +262,15 @@ public class DataManager : MonoBehaviour
             playerXP = 0;
             requireXPForLevelup = requireXPForLevelup + (requireXPForLevelup * (xpIncreasePR / 100));
             SetRequireXP(requireXPForLevelup);
+
+            if(playerLevel == 2 && canMiniGameTutorialShow)
+            {
+                Debug.Log("Mini Game tutorial");
+                UIManager.instance.ui_Tutorial.toutorialState = TutorialState.MiniGame;
+                UIManager.instance.ui_Tutorial.gameObject.SetActive(true);
+                canMiniGameTutorialShow = false;
+                SetMiniGameTutorialState(canMiniGameTutorialShow);
+            }
         }
     }
 
@@ -358,6 +401,49 @@ public class DataManager : MonoBehaviour
     #region PLAYERPREFS SET DATA
 
 
+
+    #region Tutorial Set Data
+
+
+    public void SetBasicTutorialState(bool value)
+    {
+        if(value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_BASIC_TUTORIAL_STATE, 0);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_BASIC_TUTORIAL_STATE, 1);
+        }
+    }
+    public void SetPowerupTutorialState(bool value)
+    {
+        if (value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_POWERUP_TUTORIAL_STATE, 0);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_POWERUP_TUTORIAL_STATE, 1);
+        }
+    }
+    public void SetMiniGameTutorialState(bool value)
+    {
+        if (value == false)
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_MINIGAME_TUTORIAL_STATE, 0);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_MINIGAME_TUTORIAL_STATE, 1);
+        }
+    }
+
+
+    #endregion
+
+
+
     public void SetHeroCard(int index , int value)
     {
         int currentCards = PlayerManager.Instance.all_Players[index].currentCards + value;
@@ -401,7 +487,7 @@ public class DataManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Set One Day true");
+            //Debug.Log("Set One Day true");
             PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_DAILY_MISSION_ONEDAY_COMPLETE, 1);
         }
     }
@@ -479,11 +565,6 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS, runs);
     }
 
-    public void SetArchivmentRewardState(int index, int i)
-    {
-        PlayerPrefs.SetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_REWARD_COLLECTED + index, i);
-    }
-
 
     public void SetSlotUnlockTimer(int _index, float _time)
     {
@@ -530,6 +611,57 @@ public class DataManager : MonoBehaviour
     #endregion
 
     #region PLAYERPREFS GET DATA
+
+
+
+
+
+
+
+
+
+    #region Tutorial Get Data
+
+
+    public bool GetBasicTutorialState()
+    {
+        if(PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_BASIC_TUTORIAL_STATE) == 0)
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
+    }
+
+    public bool GetPowerupTutorialState()
+    {
+        if (PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_POWERUP_TUTORIAL_STATE) == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    public bool GetMinigameTutorialState()
+    {
+        if (PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_MINIGAME_TUTORIAL_STATE) == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+
+    #endregion
+
+
+
 
     public int GetHeroCards(int index)
     {
@@ -654,10 +786,7 @@ public class DataManager : MonoBehaviour
         return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_PLAYER_TOTAL_RUNS);
     }
 
-    public int GetArchivmentRewardState(int i)
-    {
-        return PlayerPrefs.GetInt(PlayerPrefsKeys.KEY_ACHIEVEMENT_REWARD_COLLECTED + i);
-    }
+   
 
 
     public string GetGameQuitTime()

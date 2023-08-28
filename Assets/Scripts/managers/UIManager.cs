@@ -11,6 +11,10 @@ public class UIManager : MonoBehaviour
     {
         instance = this;
     }
+
+    [Header("Tutorial")]
+    public TutorialUI ui_Tutorial;
+
     [Header("All Scripts")]
     public GameObject allMenus;
     public HomePanelUI ui_HomePanel;

@@ -44,7 +44,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool IsEnoughCardsForUpgradePlayer(int index)
     {
-        if (all_Players[index].currentCards >= all_Players[index].requireCardsToUnlock[all_Players[index + 1].currentLevel])
+        if (all_Players[index].currentCards >= all_Players[index].requireCardsToUnlock[all_Players[index].currentLevel])
             return true;
 
         return false;
@@ -68,16 +68,16 @@ public class PlayerManager : MonoBehaviour
 
     public void SetPlayerState(int index)
     {
-        Debug.Log("Set Cards state");
+       // Debug.Log("Set Cards state");
         if (all_Players[index].currentCards > 0 && all_Players[index].currentCards < all_Players[index].requireCardsToUnlock[all_Players[index].currentLevel] || all_Players[index].currentLevel > 0)
         {
-            Debug.Log("Cards increase");
+         //   Debug.Log("Cards increase");
             all_Players[index].playerState = PlayerState.HasCards;
-            Debug.Log("Player " + index + " player State " + all_Players[index].playerState);
+            //Debug.Log("Player " + index + " player State " + all_Players[index].playerState);
         }
         else if (all_Players[index].currentCards >= all_Players[index].requireCardsToUnlock[all_Players[index].currentLevel])
         {
-            Debug.Log("Upgrade Player");
+           // Debug.Log("Upgrade Player");
             all_Players[index].playerState = PlayerState.EnoughCardsForUpgrade;
         }
     }

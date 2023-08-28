@@ -16,7 +16,6 @@ public class DailyMissionUI : MonoBehaviour
 
     private List<DailyMissionData> list_DailyMission = new List<DailyMissionData>();
     public bool isOnedayCompelete;
-    private int dailyMissionSOIndex;
 
     private void Update()
     {
@@ -76,7 +75,7 @@ public class DailyMissionUI : MonoBehaviour
 
             list_MissionSO.Add(all_DailyMissionSO[randomIndex]);
             DataManager.Instance.SetDailyMisisonSOIndex(index, randomIndex);
-            Debug.Log("in if index : " + index);
+            //Debug.Log("in if index : " + index);
             if (index == numberOfDailyMissions - 1)
             {
                // Debug.Log("False daily misison ");

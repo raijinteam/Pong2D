@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4810096993490370893
 Transform:
   m_ObjectHideFlags: 0
@@ -98,49 +98,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f870255623cbc44198da068284ff349, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBatting: 1
+  isBatting: 0
   isHitBall: 0
   canPaddleResetRotation: 0
-  flt_RotationDelay: 0
+  flt_RotationDelay: 2
   currentRotationDelay: 0
   xPositionOffset: 0
   ball: {fileID: 0}
-  myCollider: {fileID: 0}
+  myCollider: {fileID: 4810096993490370894}
   rigidBody: {fileID: 4810096993490370895}
   tf_BatHitPoint: {fileID: 4810096995097312491}
   tf_LeftSwingPoint: {fileID: 4810096993857792872}
   tf_RightSwingPoint: {fileID: 4810096994249597663}
   sweetForce: {fileID: 985023383}
   flt_RotationRightANgle: 0
-  flt_MinRightRotationAngle: 0
-  flt_MaxRightRotationAngle: 40
+  flt_MinRightRotationAngle: 20
+  flt_MaxRightRotationAngle: 60
   flt_RotationLeftAngle: 0
-  flt_MinLeftRotationAngle: 0
-  flt_MaxLeftRotationAngle: 180
+  flt_MinLeftRotationAngle: 140
+  flt_MaxLeftRotationAngle: 170
   isBallInRange: 0
   flt_MoveSpeed: 5
-  aiDifficulty: 2
+  aiDifficulty: 0
   flt_LowMoveSpeed: 5
   flt_MediumMoveSpeed: 10
   flt_HighMoveSpeed: 20
-  flt_LowFollowDistance: 4
-  flt_MediumFollowDistance: 7
-  flt_HighFollowDistance: 9
-  flt_LowRotateSpeed: 0
-  flt_MediumRotateSpeed: 0
-  flt_HighRotateSpeed: 0
-  flt_Swing_Force: 10
-  flt_MinSwingForce: -500
-  flt_MaxSwingForce: 500
+  flt_LowFollowDistance: 2
+  flt_MediumFollowDistance: 3
+  flt_HighFollowDistance: 5
+  flt_LowRotateSpeed: 1
+  flt_MediumRotateSpeed: 5
+  flt_HighRotateSpeed: 300
+  flt_Swing_Force: 1
+  flt_MinSwingForce: -1
+  flt_MaxSwingForce: 1
   remainingRotation: 0
   canRotateRight: 1
   canRotateLeft: 1
-  rotationSpeed: 90
+  rotationSpeed: 300
   flt_MinRotatinToReset: 50
   flt_MaxRotationToReset: 40
   flt_StartRotation: 0
   targetRotation: 0
-  flt_RoatationSpeed: 100
+  flt_RoatationSpeed: 150
 --- !u!114 &985023383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tf_BatHitPoint: {fileID: 4810096995097312491}
   flt_MinHitForce: 1
-  flt_MaxHitForce: 4
+  flt_MaxHitForce: 1
   flt_MinHitPointDistacneOnBallTouch: 0.4
   flt_MaxHitPointDistranceOnBallTouch: 0.9
 --- !u!1 &4810096993857792873

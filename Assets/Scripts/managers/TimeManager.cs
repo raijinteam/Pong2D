@@ -201,7 +201,7 @@ public class TimeManager : MonoBehaviour
             DataManager.Instance.SetDailyMissionTime(0);
             //    Debug.Log("Set Reward Time");
             DataManager.Instance.SetDailyMissionOnedayComplete(true);
-            Debug.Log("In Time manager 2");
+            //Debug.Log("In Time manager 2");
             UIManager.instance.ui_Achievement.ResetAllListData();
             UIManager.instance.ui_Achievement.SpawnDailyMissions();
             currentDailyMissionTime = DataManager.Instance.dailyMissionTime;

@@ -72,10 +72,13 @@ public class BallMovement : MonoBehaviour
     {
 
         if (ball_Rb.velocity.y < 1 && ball_Rb.velocity.y > -1) {
-            //  Debug.Log("ball velocity is low : " + ball_Rb.velocity.y);
+            Debug.Log("ball velocity is low : " + ball_Rb.velocity.y);
             //ball_Rb.AddForce(new Vector2( ball_Rb.velocity.x, ball_Rb.velocity.y * flt_MaxWallReflectionAngle));
             ball_Rb.velocity = new Vector2(ball_Rb.velocity.x, ball_Rb.velocity.y * flt_MaxWallReflectionAngle);
         }
+
+
+        ball_Rb.velocity = Vector2.ClampMagnitude(ball_Rb.velocity, flt_BallMaxSpeed);
 
         if (isSwing) {
 

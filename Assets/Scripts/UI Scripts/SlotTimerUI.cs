@@ -19,7 +19,7 @@ public class SlotTimerUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_CommonCards;
     [SerializeField] private TextMeshProUGUI txt_RareCards;
     [SerializeField] private TextMeshProUGUI txt_EpicCards;
-    [SerializeField] private TextMeshProUGUI txt_GoldAmount; 
+    [SerializeField] private TextMeshProUGUI txt_GoldAmount;
     [SerializeField] private int unlockGemsmultiplication = 10;
     private float unlockTime;
 
@@ -34,7 +34,7 @@ public class SlotTimerUI : MonoBehaviour
         CalculateUnlockTime(TimeManager.Instance.currentSlotTime[index]);
     }
 
-    public void SetSlotTimerData(string _name  , float _unlockTime , int _numberOfRewards , int _requireAmountForUnlock)
+    public void SetSlotTimerData(string _name, float _unlockTime, int _numberOfRewards, int _requireAmountForUnlock)
     {
         CalculateUnlockTime(_unlockTime);
 
@@ -75,7 +75,7 @@ public class SlotTimerUI : MonoBehaviour
 
     private void CalculateRequireGemsAmount(float hours)
     {
-        if(hours > 0)
+        if (hours > 0)
         {
             requireGemsForUnlock = (int)hours * unlockGemsmultiplication;
         }
@@ -89,25 +89,48 @@ public class SlotTimerUI : MonoBehaviour
     public void OnClick_CompleteTimeWithGems()
     {
 
-        if (!DataManager.Instance.IsEnoughGemssForPurchase(requireGemsForUnlock))
-            return;
+        if(DataManager.Instance.isGameFirstTimeLoad && index == 0)
+        {
+            SlotsManager.Instance.allSlots[0].slotState = SlotState.RewardGenrated;
+            UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
+            UIManager.instance.ui_Tutorial.toutorialState = TutorialState.CollecteChestRewards;
+            UIManager.instance.ui_Tutorial.gameObject.SetActive(true);
+            UIManager.instance.ui_SlotTimer.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (!DataManager.Instance.IsEnoughGemssForPurchase(requireGemsForUnlock))
+                return;
 
-        DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
-        UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
-        TimeManager.Instance.currentSlotTime[index] = SlotsManager.Instance.allSlots[index].currentTimer;
-        DataManager.Instance.DecreaseGems(requireGemsForUnlock);
-        SlotsManager.Instance.isAnotherSlotHasActiveTime = false;
-        this.gameObject.SetActive(false);
+            DataManager.Instance.SetRewardSlotState(index, SlotState.RewardGenrated);
+            UIManager.instance.ui_RewardSlot.SetSlotsDataWhenChangeState();
+            TimeManager.Instance.currentSlotTime[index] = SlotsManager.Instance.allSlots[index].currentTimer;
+            DataManager.Instance.DecreaseGems(requireGemsForUnlock);
+            SlotsManager.Instance.isAnotherSlotHasActiveTime = false;
+            this.gameObject.SetActive(false);
+        }
+
+
+       
     }
 
     public void OnClick_ReduceTimeWithAds()
     {
-        TimeManager.Instance.currentSlotTime[index] -= (3 * 3600);
+        if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            TimeManager.Instance.currentSlotTime[index] -= (3 * 3600);
+
+        }
+
     }
 
 
     public void OnClick_Close()
     {
-        this.gameObject.SetActive(false);
+        if (DataManager.Instance.isGameFirstTimeLoad)
+        {
+            this.gameObject.SetActive(false);
+
+        }
     }
 }

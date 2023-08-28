@@ -5,4 +5,5 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public PlayerPaddleMovement playerMovement;
+    public SpriteRenderer paddleSprite;
 }

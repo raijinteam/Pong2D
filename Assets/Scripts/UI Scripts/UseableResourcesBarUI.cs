@@ -21,7 +21,10 @@ public class UseableResourcesBarUI : MonoBehaviour
     [SerializeField] private float lerpTimer;
 
 
-    private void Start()
+
+
+
+    public void SetAllUseableResourceData()
     {
         tropies = DataManager.Instance.totalTrophies;
         coins = DataManager.Instance.totalCoins;
@@ -33,6 +36,11 @@ public class UseableResourcesBarUI : MonoBehaviour
         txt_CoinsCount.text = coins.ToString("F0");
         txt_GemsCount.text = gems.ToString("F0");
         txt_SkipIt.text = skipIt.ToString("F0");
+    }
+
+    private void Start()
+    {
+
     }
 
 
@@ -86,39 +94,59 @@ public class UseableResourcesBarUI : MonoBehaviour
 
     public void OnClick_BuyCoin()
     {
+        if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_Shop.gameObject.SetActive(true);
 
-        UIManager.instance.ui_Shop.gameObject.SetActive(true);
+            UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
 
-        UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
+            Vector2 position = new Vector2(0, 250);
+            UIManager.instance.ui_Shop.ScrollDownAnimation(position);
+        }
 
-        Vector2 position = new Vector2(0, 250);
-        UIManager.instance.ui_Shop.ScrollDownAnimation(position);
     }
 
     public void OnClick_BuyGems()
     {
 
-        UIManager.instance.ui_Shop.gameObject.SetActive(true);
+        if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_Shop.gameObject.SetActive(true);
 
-        UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
+            UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
 
-        Vector2 position = new Vector2(0, 700);
-        UIManager.instance.ui_Shop.ScrollDownAnimation(position);
+            Vector2 position = new Vector2(0, 700);
+            UIManager.instance.ui_Shop.ScrollDownAnimation(position);
+
+        }
+
     }
 
     public void OnClick_BuySkipIt()
     {
-        UIManager.instance.ui_Shop.gameObject.SetActive(true);
 
-        UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
+        if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+            UIManager.instance.ui_Shop.gameObject.SetActive(true);
 
-        Vector2 position = new Vector2(0, 700);
-        UIManager.instance.ui_Shop.ScrollDownAnimation(position);
+            UIManager.instance.ui_Navigation.OnClick_MenuActivate(0);
+
+            Vector2 position = new Vector2(0, 700);
+            UIManager.instance.ui_Shop.ScrollDownAnimation(position);
+
+        }
+
     }
 
 
     public void OnClick_OpenProfile()
     {
-        UIManager.instance.ui_PlayerProfile.gameObject.SetActive(true);
+
+        if (!DataManager.Instance.isGameFirstTimeLoad)
+        {
+
+            UIManager.instance.ui_PlayerProfile.gameObject.SetActive(true);
+        }
+
     }
 }

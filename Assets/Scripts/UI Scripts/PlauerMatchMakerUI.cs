@@ -20,9 +20,6 @@ public class PlauerMatchMakerUI : MonoBehaviour
         txt_WinAmount.text = "Price " + GameManager.instance.all_LevelWinningPrice[GameManager.instance.currentLevelIndex].ToString(); ;
     }
 
-    private void Start()
-    {
-    }
 
     // Update is called once per frame
     void Update()
@@ -34,7 +31,6 @@ public class PlauerMatchMakerUI : MonoBehaviour
             this.gameObject.SetActive(false);
             UIManager.instance.ui_UseableResouce.gameObject.SetActive(false);
             UIManager.instance.ui_TimeScreen.gameObject.SetActive(true);
-            //GameManager.instance.StartGame();
             currentDelayTime = flt_DelayTime;
         }
     }
